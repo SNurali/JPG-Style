@@ -8,7 +8,7 @@ SECRET_KEY = 'django-insecure-1234567890abcdefg'
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'jpg-style.onrender.com').split(',')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
