@@ -1,0 +1,28 @@
+{% extends "products/base.html" %}
+{% block content %}
+<h2 class="my-4">Оформление заказа</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="name" class="form-label">Имя</label>
+        <input type="text" name="name" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label for="phone" class="form-label">Телефон</label>
+        <input type="tel" name="phone" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label for="address" class="form-label">Адрес доставки</label>
+        <textarea name="address" class="form-control" rows="3" required></textarea>
+    </div>
+    <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="delivery" checked disabled>
+        <label class="form-check-label" for="delivery">Доставка — договорная</label>
+    </div>
+    <div class="mb-3">
+        <p>Оплата при получении товара</p>
+    </div>
+    <button type="submit" class="btn btn-success">Подтвердить заказ</button>
+</form>
+{% endblock %}

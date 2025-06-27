@@ -1,0 +1,37 @@
+{% extends "products/base.html" %}
+{% block content %}
+<h2 class="my-4">Контакты</h2>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <h5>Наши контакты</h5>
+        <p><strong>Телефон:</strong> +998 50 104 00 26</p>
+        <p><strong>Адрес:</strong> Ташкент, Сергелийский район, ул. 8а, дом 3</p>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <h5>Форма обратной связи</h5>
+        <form>
+            <div class="mb-3">
+                <label for="name" class="form-label">Имя</label>
+                <input type="text" class="form-control" id="name" placeholder="Ваше имя">
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" placeholder="example@mail.com">
+            </div>
+            <div class="mb-3">
+                <label for="message" class="form-label">Сообщение</label>
+                <textarea class="form-control" id="message" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Отправить</button>
+        </form>
+    </div>
+</div>
+
+<h5>Как нас найти</h5>
+<iframe width="100%" height="400" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
+    src="https://maps.google.com/maps?q=%D0%A2%D0%B0%D1%88%D0%BA%D0%B5%D0%BD%D1%82%2C+%D0%A1%D0%B5%D1%80%D0%B3%D0%B5%D0%BB%D0%B8%D0%B9%D1%81%D0%BA%D0%B8%D0%B9+район%2C+8%D0%B0%2C+дом+3&amp;t=&amp;z=13&amp;ie=UTF8&amp;iwloc=&amp;output=embed">
+</iframe>
+
+{% endblock %}

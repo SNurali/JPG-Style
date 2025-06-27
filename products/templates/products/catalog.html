@@ -1,0 +1,78 @@
+{% extends "products/base.html" %}
+{% block content %}
+<h2 class="my-4">Каталог товаров</h2>
+
+<div class="mb-4">
+    <form method="get">
+        <select name="category" class="form-select" onchange="this.form.submit()">
+            <option value="">Все категории</option>
+            {% for category in categories %}
+            <option value="{{ category.id }}" {% if selected_category == category.id %}selected{% endif %}>
+                {{ category.name }}
+            </option>
+            {% endfor %}
+        </select>
+    </form>
+</div>
+
+<div class="row g-4">
+    {% if has_products %}
+        {% for product in products %}
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <img src="{{ product.image.url }}"
+                     class="card-img-top"
+                     style="height: 200px; object-fit: cover;"
+                     alt="{{ product.name }}">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text text-truncate">{{ product.description }}</p>
+                    <h6 class="text-primary fs-5 mt-auto">{{ product.price }} сум</h6>
+                    <a href="{% url 'product_detail' product.id %}" class="btn btn-primary mt-3">
+                        Подробнее
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12 text-center">
+            <div class="alert alert-warning">Товаров пока нет</div>
+        </div>
+    {% endif %}
+</div>
+
+{# Пагинация #}
+{% if products.paginator.num_pages > 1 %}
+<nav aria-label="Навигация по страницам" class="mt-5">
+    <ul class="pagination justify-content-center">
+        {% if products.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ products.previous_page_number }}">Предыдущая</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <span class="page-link">Предыдущая</span>
+        </li>
+        {% endif %}
+
+        {% for i in products.paginator.page_range %}
+        <li class="page-item {% if products.number == i %}active{% endif %}">
+            <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+        </li>
+        {% endfor %}
+
+        {% if products.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ products.next_page_number }}">Следующая</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <span class="page-link">Следующая</span>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% endblock %}

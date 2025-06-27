@@ -1,0 +1,71 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.carousel-item img {
+    object-fit: cover;
+    height: 400px;
+}
+
+.card-body {
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+/* Навигационная панель */
+.navbar {
+    font-weight: 500;
+}
+
+.badge {
+    position: relative;
+    top: -5px;
+    left: 5px;
+    font-size: 0.75rem;
+    padding: .25em .6em;
+}
+
+/* Эффекты для карточек */
+.card {
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.card-img-top {
+    transition: transform 0.3s ease;
+}
+
+/* Увеличение изображения при наведении */
+.card:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+/* Тень при наведении */
+.hover-shadow:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Увеличение кнопки при наведении */
+.hover-grow:hover {
+    transform: scale(1.02);
+    background-color: #198754 !important;
+    color: white !important;
+}
+
+/* Плавность всех анимаций */
+.transition {
+    transition: all 0.3s ease;
+}
