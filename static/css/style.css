@@ -1,25 +1,8 @@
+/* Общие стили */
 body {
     font-family: 'Segoe UI', sans-serif;
-}
-
-.carousel-item img {
-    object-fit: cover;
-    height: 400px;
-}
-
-.card-body {
-    height: 200px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.card-text {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
+    line-height: 1.6;
+    color: #333;
 }
 
 /* Навигационная панель */
@@ -33,39 +16,138 @@ body {
     left: 5px;
     font-size: 0.75rem;
     padding: .25em .6em;
+    min-width: 20px;
+    text-align: center;
 }
 
-/* Эффекты для карточек */
-.card {
-    overflow: hidden;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-.card-img-top {
+/* Слайдер */
+.carousel-item img {
+    object-fit: cover;
+    height: 400px;
     transition: transform 0.3s ease;
 }
 
-/* Увеличение изображения при наведении */
-.card:hover .card-img-top {
+.carousel-item.active img {
+    transform: scale(1);
+}
+
+.carousel-item-next img {
     transform: scale(1.05);
 }
 
-/* Тень при наведении */
+@media (max-width: 768px) {
+    .carousel-item img {
+        height: 250px;
+    }
+}
+
+/* Карточки товаров */
+.card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border: none;
+    background-color: #fff;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.card-img-top {
+    object-fit: cover;
+    height: 200px;
+    transition: transform 0.3s ease;
+}
+
+.card:hover .card-img-top {
+    transform: scale(1.03);
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1rem;
+    flex: 1 1 auto;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.card-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    flex-grow: 1;
+}
+
+.card-footer {
+    background-color: white;
+    border-top: none;
+}
+
+/* Эффекты при наведении */
 .hover-shadow:hover {
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
-/* Увеличение кнопки при наведении */
-.hover-grow:hover {
-    transform: scale(1.02);
-    background-color: #198754 !important;
-    color: white !important;
-}
-
-/* Плавность всех анимаций */
 .transition {
     transition: all 0.3s ease;
+}
+
+/* Мобильная адаптация */
+@media (max-width: 768px) {
+    .card-img-top {
+        height: 150px;
+    }
+
+    .card-title {
+        font-size: 1.1rem;
+    }
+
+    .fs-5 {
+        font-size: 0.95rem !important;
+    }
+
+    .btn {
+        font-size: 0.95rem;
+        padding: 0.4rem 0.8rem;
+    }
+}
+
+/* Иконка корзины вне меню */
+.floating-cart-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    background-color: #28a745;
+    color: white;
+    border-radius: 50%;
+    padding: 12px 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+.floating-cart-btn:hover {
+    transform: scale(1.1);
+    background-color: #218838;
+}
+
+.floating-cart-btn svg {
+    fill: white;
+}
+
+.floating-cart-btn .badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    font-size: 0.7rem;
+    padding: .25em .6em;
 }

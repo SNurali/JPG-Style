@@ -4,25 +4,49 @@
 
 <form method="post">
     {% csrf_token %}
+
     <div class="mb-3">
         <label for="name" class="form-label">Имя</label>
-        <input type="text" name="name" class="form-control" required>
+        <input type="text" name="name" id="name" class="form-control" required>
     </div>
+
     <div class="mb-3">
         <label for="phone" class="form-label">Телефон</label>
-        <input type="tel" name="phone" class="form-control" required>
+        <input type="tel" name="phone" id="phone" class="form-control" required>
     </div>
+
     <div class="mb-3">
         <label for="address" class="form-label">Адрес доставки</label>
-        <textarea name="address" class="form-control" rows="3" required></textarea>
+        <textarea name="address" id="address" class="form-control" rows="3" required></textarea>
     </div>
-    <div class="mb-3 form-check">
-        <input type="checkbox" class="form-check-input" id="delivery" checked disabled>
-        <label class="form-check-label" for="delivery">Доставка — договорная</label>
-    </div>
-    <div class="mb-3">
-        <p>Оплата при получении товара</p>
-    </div>
-    <button type="submit" class="btn btn-success">Подтвердить заказ</button>
+
+    <hr class="my-4">
+
+    <h4>Ваш заказ:</h4>
+    <ul class="list-group mb-4">
+        {% for item in cart_items %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <img src="{{ item.product.image.url }}"
+                         alt="{{ item.product.name }}"
+                         style="width: 50px; height: 50px; object-fit: cover;"
+                         class="me-3">
+                    <span>{{ item.product.name }}</span>
+                </div>
+                <div class="text-end">
+                    <small class="text-muted">Кол-во: {{ item.quantity }}</small><br>
+                    <strong>{{ item.total }} сум</strong>
+                </div>
+            </li>
+        {% endfor %}
+        <li class="list-group-item d-flex justify-content-between align-items-center fw-bold">
+            Итого:
+            <span>{{ total }} сум</span>
+        </li>
+    </ul>
+
+    <button type="submit" class="btn btn-success btn-lg w-100">
+        Подтвердить заказ
+    </button>
 </form>
 {% endblock %}

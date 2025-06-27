@@ -1,15 +1,15 @@
-# jgp_smartwash/settings.py
 from pathlib import Path
 import os
 
-BASE_DIR = Path(__file__).parent.parent
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-1234567890abcdefg'
-
+# Quick-start development settings - unsuitable for production
+SECRET_KEY = 'django-insecure-1234567890abcdefg'  # Используй .env в проде
 DEBUG = True
-
 ALLOWED_HOSTS = ['jpg-style.onrender.com', 'smartwash.onrender.com', 'localhost', '127.0.0.1']
 
+# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -17,16 +17,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'products'
+    'products',
+    'sorl.thumbnail',
 ]
-INSTALLED_APPS += ['sorl.thumbnail']
-# Необязательно, но рекомендуется
+
+# Thumbnail aliases
 THUMBNAIL_ALIASES = {
     '': {
-        'carousel': {'size': (800, 400), 'crop': True},
-        'product': {'size': (400, 200), 'crop': True},
+        'carousel': {'size': (800, 400), 'crop': 'smart'},
+        'product': {'size': (400, 200), 'crop': 'center'},
     },
 }
+THUMBNAIL_DEBUG = False
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -58,6 +60,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'jgp_smartwash.wsgi.application'
 
+# Database
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -65,19 +68,31 @@ DATABASES = {
     }
 }
 
+# Password validation
 AUTH_PASSWORD_VALIDATORS = []
 
+# Internationalization
 LANGUAGE_CODE = 'ru'
 TIME_ZONE = 'Asia/Tashkent'
 USE_I18N = True
 USE_TZ = True
 
+# Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Telegram bot
+TELEGRAM_TOKEN = "7492480842:AAFcwTRve8yolNVvPb1OAkiustwIz35mZII"
+TELEGRAM_CHAT_ID = "532350689"
+
+# Убираем предупреждение UnorderedObjectListWarning
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240  # если много полей в формах

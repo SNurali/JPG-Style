@@ -10,6 +10,7 @@
             <th>Количество</th>
             <th>Цена</th>
             <th>Сумма</th>
+            <th>Действия</th>
         </tr>
     </thead>
     <tbody>
@@ -27,6 +28,12 @@
             <td>{{ item.quantity }}</td>
             <td>{{ item.product.price }} сум</td>
             <td>{{ item.total }} сум</td>
+            <td>
+                <a href="{% url 'remove_from_cart' product_id=item.product.id %}"
+                   class="btn btn-sm btn-outline-danger">
+                    Удалить
+                </a>
+            </td>
         </tr>
         {% endfor %}
         <tr class="table-light">
