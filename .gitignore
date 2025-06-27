@@ -1,0 +1,16 @@
+# Virtual environment
+venv/
+.env
+*.pyc
+__pycache__
+*.swp
+*~
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+media/
+staticfiles/
+.env.local
+.env.*
+!.env.example
