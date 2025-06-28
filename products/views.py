@@ -3,6 +3,8 @@ from .models import Product, Category, Order, OrderItem
 from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import logging
+import requests
+
 # Настройка логгера
 logger = logging.getLogger(__name__)
 
@@ -12,9 +14,6 @@ TELEGRAM_CHAT_ID = "532350689"
 
 def send_order_to_telegram(order):
     try:
-        import imghdr  # Добавляем импорт
-        from telegram import Bot
-
         message = f"🛒 Новый заказ #{order.id}\n\n"
         message += f"👤 Имя: {order.customer_name}\n"
         message += f"📞 Телефон: {order.phone}\n"
@@ -26,12 +25,14 @@ def send_order_to_telegram(order):
 
         message += f"\n💰 Итого: {order.total_price} сум"
 
-        bot = Bot(token=TELEGRAM_TOKEN)
-        bot.send_message(
-            chat_id=TELEGRAM_CHAT_ID,
-            text=message,
-            parse_mode='Markdown'
-        )
+        url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+        params = {
+            'chat_id': TELEGRAM_CHAT_ID,
+            'text': message,
+            'parse_mode': 'Markdown'
+        }
+        response = requests.post(url, params=params)
+        response.raise_for_status()
     except Exception as e:
         logger.error(f"Ошибка отправки в Telegram: {str(e)}")
 
