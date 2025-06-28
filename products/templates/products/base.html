@@ -233,16 +233,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Главная</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'catalog' %}">Каталог</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'contacts' %}">Контакты</a></li>
-                <!-- Языковой переключатель -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown">
-                        {% if '/uz/' in request.path %}O'zbek{% else %}Русский{% endif %}
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{ request.path|slice:'3:' }}">Русский</a></li>
-                        <li><a class="dropdown-item" href="/uz{{ request.path }}">O'zbek</a></li>
-                    </ul>
-                </li>
             </ul>
         </div>
     </div>
