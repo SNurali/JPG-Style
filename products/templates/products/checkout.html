@@ -1,52 +1,65 @@
 {% extends "products/base.html" %}
 {% block content %}
-<h2 class="my-4">Оформление заказа</h2>
+<div class="container my-5">
+    <h2 class="mb-4">Оформление заказа</h2>
 
-<form method="post">
-    {% csrf_token %}
-
-    <div class="mb-3">
-        <label for="name" class="form-label">Имя</label>
-        <input type="text" name="name" id="name" class="form-control" required>
-    </div>
-
-    <div class="mb-3">
-        <label for="phone" class="form-label">Телефон</label>
-        <input type="tel" name="phone" id="phone" class="form-control" required>
-    </div>
-
-    <div class="mb-3">
-        <label for="address" class="form-label">Адрес доставки</label>
-        <textarea name="address" id="address" class="form-control" rows="3" required></textarea>
-    </div>
-
-    <hr class="my-4">
-
-    <h4>Ваш заказ:</h4>
-    <ul class="list-group mb-4">
-        {% for item in cart_items %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <img src="{{ item.product.image.url }}"
-                         alt="{{ item.product.name }}"
-                         style="width: 50px; height: 50px; object-fit: cover;"
-                         class="me-3">
-                    <span>{{ item.product.name }}</span>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h4>Ваши данные</h4>
                 </div>
-                <div class="text-end">
-                    <small class="text-muted">Кол-во: {{ item.quantity }}</small><br>
-                    <strong>{{ item.total }} сум</strong>
-                </div>
-            </li>
-        {% endfor %}
-        <li class="list-group-item d-flex justify-content-between align-items-center fw-bold">
-            Итого:
-            <span>{{ total }} сум</span>
-        </li>
-    </ul>
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
 
-    <button type="submit" class="btn btn-success btn-lg w-100">
-        Подтвердить заказ
-    </button>
-</form>
+                        <div class="mb-3">
+                            <label for="name" class="form-label">ФИО *</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Телефон *</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Адрес доставки *</label>
+                            <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-success btn-lg w-100">
+                            Подтвердить заказ
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h4>Ваш заказ</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group mb-3">
+                        {% for item in cart_items %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ item.product.name }}</strong>
+                                <div class="text-muted">Кол-во: {{ item.quantity }}</div>
+                            </div>
+                            <span>{{ item.total }} сум</span>
+                        </li>
+                        {% endfor %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center fw-bold">
+                            <span>Итого:</span>
+                            <span class="text-primary">{{ total }} сум</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

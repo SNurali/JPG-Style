@@ -96,3 +96,7 @@ TELEGRAM_CHAT_ID = "532350689"
 
 # Убираем предупреждение UnorderedObjectListWarning
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240  # если много полей в формах
+
+# Настройки для корзины
+CART_SESSION_ID = 'cart'
+CART_ITEM_MAX_QUANTITY = 10

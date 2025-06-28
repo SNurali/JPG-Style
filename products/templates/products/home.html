@@ -1,71 +1,83 @@
 {% extends "products/base.html" %}
 {% block content %}
-<div class="text-center my-5">
-    <h1 class="display-5">Добро пожалуйста в магазин автохимии JPG-Style Smart Wash!</h1>
+<div class="text-center my-5 animate__animated animate__fadeIn">
+    <h1 class="display-5 fw-bold">Добро пожаловать в магазин автохимии JPG-Style Smart Wash!</h1>
+    <p class="lead text-muted">Профессиональные средства для ухода за автомобилем</p>
 </div>
 
 {# Слайдер #}
 {% if slider_products %}
-<div id="carouselExampleIndicators" class="carousel slide mb-5 shadow-sm rounded" data-bs-ride="carousel">
+<div id="mainCarousel" class="carousel slide mb-5 shadow-lg rounded-3 overflow-hidden" data-bs-ride="carousel">
     <div class="carousel-indicators">
         {% for product in slider_products %}
             <button type="button"
-                    data-bs-target="#carouselExampleIndicators"
+                    data-bs-target="#mainCarousel"
                     data-bs-slide-to="{{ forloop.counter0 }}"
                     {% if forloop.first %}class="active"{% endif %}>
             </button>
         {% endfor %}
     </div>
-    <div class="carousel-inner rounded">
+    <div class="carousel-inner rounded-3">
         {% for product in slider_products %}
         <div class="carousel-item {% if forloop.first %}active{% endif %}">
             <img src="{{ product.image.url }}"
                  class="d-block w-100"
-                 style="height: 400px; object-fit: cover;"
+                 style="height: 500px; object-fit: cover;"
                  alt="{{ product.name }}">
-            <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 py-2 rounded">
-                <h5>{{ product.name }}</h5>
+            <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-75 p-4 rounded-3">
+                <h3 class="fw-bold">{{ product.name }}</h3>
+                <p class="mb-0">{{ product.price }} сум</p>
+                <a href="{% url 'product_detail' product.id %}" class="btn btn-primary mt-2">
+                    Подробнее
+                </a>
             </div>
         </div>
         {% endfor %}
     </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+    <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
     </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+    <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel" data-bs-slide="next">
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
     </button>
 </div>
 {% else %}
-<div class="alert alert-info text-center">Нет товаров для отображения в слайдере</div>
+<div class="alert alert-info text-center animate__animated animate__fadeIn">Нет товаров для отображения в слайдере</div>
 {% endif %}
 
 {# Карточки товаров #}
-<h2 class="my-4">Каталог товаров</h2>
+<h2 class="my-4 text-center fw-bold">Популярные товары</h2>
 
-<div class="row g-3 row-cols-1 row-cols-md-3">
+<div class="row g-4 row-cols-1 row-cols-md-3 animate__animated animate__fadeInUp">
     {% if products %}
         {% for product in products %}
-        <div class="col d-flex">
-            <div class="card h-100 shadow-sm border-0 hover-shadow transition w-100">
-                <img src="{{ product.image.url }}"
-                     class="card-img-top"
-                     style="height: 200px; object-fit: cover;"
-                     alt="{{ product.name }}">
+        <div class="col">
+            <div class="card h-100 border-0 shadow-sm hover-3d">
+                <div class="position-relative overflow-hidden" style="height: 200px;">
+                    <img src="{{ product.image.url }}"
+                         class="card-img-top h-100 w-100 object-fit-cover transition hover-zoom"
+                         alt="{{ product.name }}">
+                    <div class="position-absolute bottom-0 end-0 m-2">
+                        <span class="badge bg-primary rounded-pill fs-6">{{ product.price }} сум</span>
+                    </div>
+                </div>
                 <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">{{ product.name }}</h5>
-                    <p class="card-text text-truncate flex-grow-1">{{ product.description }}</p>
-                    <h6 class="text-primary fs-5 mt-auto">{{ product.price }} сум</h6>
-                    <a href="{% url 'product_detail' product.id %}" class="btn btn-primary mt-3 w-100">
-                        Подробнее
-                    </a>
+                    <h5 class="card-title fw-bold">{{ product.name }}</h5>
+                    <p class="card-text text-muted">{{ product.description|truncatechars:100 }}</p>
+                    <div class="mt-auto">
+                        <a href="{% url 'product_detail' product.id %}" class="btn btn-primary w-100 hover-grow">
+                            Подробнее
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
         {% endfor %}
     {% else %}
-        <div class="col-12 text-center">
-            <div class="alert alert-warning">Товаров пока нет</div>
+        <div class="col-12">
+            <div class="alert alert-warning text-center animate__animated animate__fadeIn">
+                Товаров пока нет
+            </div>
         </div>
     {% endif %}
 </div>
@@ -76,11 +88,11 @@
     <ul class="pagination justify-content-center">
         {% if products.has_previous %}
         <li class="page-item">
-            <a class="page-link" href="?page={{ products.previous_page_number }}">← Предыдущая</a>
+            <a class="page-link" href="?page={{ products.previous_page_number }}">← Назад</a>
         </li>
         {% else %}
         <li class="page-item disabled">
-            <span class="page-link">← Предыдущая</span>
+            <span class="page-link">← Назад</span>
         </li>
         {% endif %}
 
@@ -92,11 +104,11 @@
 
         {% if products.has_next %}
         <li class="page-item">
-            <a class="page-link" href="?page={{ products.next_page_number }}">Следующая →</a>
+            <a class="page-link" href="?page={{ products.next_page_number }}">Вперед →</a>
         </li>
         {% else %}
         <li class="page-item disabled">
-            <span class="page-link">Следующая →</span>
+            <span class="page-link">Вперед →</span>
         </li>
         {% endif %}
     </ul>

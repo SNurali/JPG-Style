@@ -3,8 +3,10 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JPG-Style Smart Wash</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link rel="stylesheet" href="/static/css/style.css">
 
     <!-- Favicon Settings -->
@@ -14,24 +16,32 @@
 
     <meta name="description" content="Магазин автохимии JPG-Style Smart Wash – нано-шампуни, воски, чернители резины и многое другое для автомобиля.">
     <style>
+        :root {
+            --primary-color: #007BFF;
+            --secondary-color: #6c757d;
+            --accent-color: #dc3545;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+
         /* Логотип в навбаре */
         .navbar-brand {
             display: flex;
             align-items: center;
             gap: 12px;
             font-weight: 600;
+            transition: all 0.3s ease;
         }
 
         .logo-svg {
             width: 42px;
             height: 42px;
-            transition: all 0.3s ease;
-            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));
+            transition: all 0.6s cubic-bezier(0.68, -0.6, 0.32, 1.6);
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
         }
 
         .navbar-brand:hover .logo-svg {
-            transform: rotate(360deg);
-            transition: transform 0.6s ease-in-out;
+            transform: rotate(360deg) scale(1.2);
         }
 
         /* Кнопка корзины */
@@ -40,7 +50,7 @@
             bottom: 20px;
             right: 20px;
             z-index: 1000;
-            background-color: #dc3545;
+            background-color: var(--accent-color);
             color: white;
             width: 60px;
             height: 60px;
@@ -48,42 +58,64 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 20px rgba(220, 53, 69, 0.4);
             text-decoration: none;
-            transition: transform 0.2s ease;
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
         }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(220, 53, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+        }
+
         .floating-cart:hover {
-            transform: scale(1.1);
+            transform: scale(1.1) rotate(10deg);
+            animation: none;
+            box-shadow: 0 6px 25px rgba(220, 53, 69, 0.6);
         }
+
         .floating-cart .cart-count {
             position: absolute;
             top: -5px;
             right: -5px;
             background-color: white;
-            color: #dc3545;
+            color: var(--accent-color);
             border-radius: 50%;
             font-size: 0.7rem;
             padding: 2px 6px;
+            font-weight: bold;
+            transform: scale(1);
+            transition: transform 0.2s ease;
+        }
+
+        .floating-cart:hover .cart-count {
+            transform: scale(1.2);
+        }
+
+        /* Анимация появления страницы */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .container {
+            animation: fadeIn 0.6s ease-out forwards;
         }
     </style>
 </head>
 <body>
 
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 fixed-top">
     <div class="container">
         <a class="navbar-brand" href="/">
-            <!-- Логотип SW -->
             <svg class="logo-svg" xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
-              <!-- Капля воды -->
-              <circle cx="50" cy="55" r="45" fill="#007BFF" />
-
-              <!-- Автомобиль внутри капли -->
+              <circle cx="50" cy="55" r="45" fill="white" />
               <rect x="35" y="55" width="30" height="15" rx="3" ry="3" fill="#666666" />
               <circle cx="40" cy="75" r="5" fill="#666666" />
               <circle cx="60" cy="75" r="5" fill="#666666" />
-
-              <!-- Окна автомобиля -->
               <rect x="38" y="58" width="10" height="6" fill="#FFFFFF" />
               <rect x="52" y="58" width="10" height="6" fill="#FFFFFF" />
             </svg>
@@ -103,7 +135,7 @@
     </div>
 </nav>
 
-<div class="container">{% block content %}{% endblock %}</div>
+<div class="container mt-5 pt-4">{% block content %}{% endblock %}</div>
 
 <!-- Кнопка корзины -->
 <a href="{% url 'cart' %}" class="floating-cart">
@@ -116,5 +148,21 @@
 </a>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Анимация навбара при скролле
+    window.addEventListener('scroll', function() {
+        const navbar = document.querySelector('.navbar');
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+
+    // Эффект волны для всех кнопок
+    document.querySelectorAll('.btn, .nav-link, .floating-cart').forEach(button => {
+        button.classList.add('wave-effect');
+    });
+</script>
 </body>
 </html>

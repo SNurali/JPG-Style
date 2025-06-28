@@ -1,55 +1,144 @@
 {% extends "products/base.html" %}
 {% block content %}
-<h2 class="my-4">Контакты</h2>
+<div class="animate__animated animate__fadeIn">
+    <h2 class="my-4 fw-bold text-center">Контакты</h2>
 
-<div class="row">
-    <div class="col-md-6 mb-4">
-        <h5>Наши контакты</h5>
-        <p><strong>Телефон:</strong> +998 50 104 00 26</p>
-        <p><strong>Адрес:</strong> Ташкент, Сергелийский район, ул. 8а, дом 3</p>
+    <div class="row g-4">
+        <div class="col-md-6 animate__animated animate__fadeInLeft">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Наши контакты</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h6 class="fw-bold mb-3">
+                            <i class="fas fa-map-marker-alt text-primary me-2"></i> Адрес
+                        </h6>
+                        <p>Ташкент, Сергелийский район, ул. 8а, дом 3</p>
+                    </div>
 
-        <!-- Telegram -->
-        <p>
-            <strong>
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#0088cc" class="me-2" viewBox="0 0 24 24">
-                    <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/>
-                </svg>
-            </strong>
-            <a href="https://t.me/jpgstyle_smartwash" target="_blank" style="color: #0088cc; text-decoration: none;">
-                @jpgstyle_smartwash
-            </a>
-        </p>
+                    <div class="mb-4">
+                        <h6 class="fw-bold mb-3">
+                            <i class="fas fa-phone-alt text-primary me-2"></i> Телефоны
+                        </h6>
+                        <p class="mb-1">+998 50 104 00 26</p>
+                        <p>+998 71 123 45 67</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold mb-3">
+                            <i class="fas fa-envelope text-primary me-2"></i> Email
+                        </h6>
+                        <p>smartwash1986@gmail.com</p>
+                    </div>
+
+                    <div>
+                        <h6 class="fw-bold mb-3">
+                            <i class="fas fa-share-alt text-primary me-2"></i> Социальные сети
+                        </h6>
+                        <div class="d-flex gap-3">
+                            <a href="https://t.me/jpgstyle_smartwash" target="_blank" class="btn btn-outline-primary btn-sm hover-grow">
+                                <i class="fab fa-telegram me-2"></i> Telegram
+                            </a>
+                            <a href="#" class="btn btn-outline-primary btn-sm hover-grow">
+                                <i class="fab fa-instagram me-2"></i> Instagram
+                            </a>
+                            <a href="#" class="btn btn-outline-primary btn-sm hover-grow">
+                                <i class="fab fa-facebook me-2"></i> Facebook
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 animate__animated animate__fadeInRight">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Форма обратной связи</h5>
+                </div>
+                <div class="card-body">
+                    <form id="contactForm" class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label for="contactName" class="form-label">Ваше имя *</label>
+                            <input type="text" class="form-control" id="contactName" required>
+                            <div class="invalid-feedback">Пожалуйста, укажите ваше имя</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="contactEmail" class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="contactEmail" required>
+                            <div class="invalid-feedback">Пожалуйста, укажите корректный email</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="contactPhone" class="form-label">Телефон</label>
+                            <input type="tel" class="form-control" id="contactPhone">
+                        </div>
+                        <div class="mb-3">
+                            <label for="contactMessage" class="form-label">Сообщение *</label>
+                            <textarea class="form-control" id="contactMessage" rows="4" required></textarea>
+                            <div class="invalid-feedback">Пожалуйста, напишите ваше сообщение</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 hover-grow">
+                            Отправить сообщение
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="col-md-6 mb-4">
-        <h5>Форма обратной связи</h5>
-        <form>
-            <div class="mb-3">
-                <label for="name" class="form-label">Имя</label>
-                <input type="text" class="form-control" id="name" placeholder="Ваше имя">
-            </div>
-            <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" placeholder="smartwash1986@gmail.com">
-            </div>
-            <div class="mb-3">
-                <label for="message" class="form-label">Сообщение</label>
-                <textarea class="form-control" id="message" rows="3"></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary w-100">Отправить</button>
-        </form>
+    <div class="mt-5 animate__animated animate__fadeInUp">
+        <h5 class="fw-bold mb-4">Как нас найти</h5>
+        <div class="ratio ratio-16x9 shadow-sm rounded-3 overflow-hidden">
+            <iframe
+                src="https://maps.google.com/maps?q=%D0%A2%D0%B0%D1%88%D0%BA%D0%B5%D0%BD%D1%82%2C+%D0%A1%D0%B5%D1%80%D0%B3%D0%B5%D0%BB%D0%B8%D0%B9%D1%81%D0%BA%D0%B8%D0%B9+%D1%80%D0%B0%D0%B9%D0%BE%D0%BD%2C+8%D0%B0%2C+%D0%B4%D0%BE%D0%BC+3&amp;t=&amp;z=15&amp;ie=UTF8&amp;iwloc=&amp;output=embed"
+                allowfullscreen
+                loading="lazy">
+            </iframe>
+        </div>
     </div>
 </div>
 
-<h5>Как нас найти</h5>
-<iframe
-    width="100%"
-    height="400"
-    frameborder="0"
-    scrolling="no"
-    marginheight="0"
-    marginwidth="0"
-    src="https://maps.google.com/maps?q=%D0%A2%D0%B0%D1%88%D0%BA%D0%B5%D0%BD%D1%82%2C+%D0%A1%D0%B5%D1%80%D0%B3%D0%B5%D0%BB%D0%B8%D0%B9%D1%81%D0%BA%D0%B8%D0%B9+район%2C+8%D0%B0%2C+дом+3&amp;t=&amp;z=13&amp;ie=UTF8&amp;iwloc=&amp;output=embed">
-</iframe>
+<script>
+// Валидация формы обратной связи
+(function() {
+    'use strict';
+    const form = document.getElementById('contactForm');
+    form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    }, false);
+})();
 
+// Анимация при отправке формы
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const btn = this.querySelector('button[type="submit"]');
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Отправка...';
+    btn.disabled = true;
+
+    // Имитация отправки
+    setTimeout(() => {
+        btn.innerHTML = '<i class="fas fa-check me-2"></i>Отправлено!';
+        setTimeout(() => {
+            btn.innerHTML = 'Отправить сообщение';
+            btn.disabled = false;
+            this.reset();
+            this.classList.remove('was-validated');
+
+            // Показываем уведомление
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-success alert-dismissible fade show mt-3 animate__animated animate__fadeInUp';
+            alert.innerHTML = `
+                <strong>Спасибо!</strong> Ваше сообщение успешно отправлено. Мы свяжемся с вами в ближайшее время.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            this.parentNode.insertBefore(alert, this.nextSibling);
+        }, 2000);
+    }, 1500);
+});
+</script>
 {% endblock %}
