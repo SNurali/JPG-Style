@@ -8,9 +8,6 @@ __pycache__
 .idea/
 .vscode/
 .DS_Store
-Thumbs.db
-media/
-staticfiles/
 .env.local
 .env.*
 !.env.example

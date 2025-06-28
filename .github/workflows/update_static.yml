@@ -1,0 +1,30 @@
+name: Update Static Files
+
+on:
+  push:
+    paths:
+      - 'static/src/**'
+      - 'media/**'
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      - name: Collect static
+        run: |
+          python manage.py collectstatic --noinput
+      - name: Commit changes
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add staticfiles/ media/
+          git diff --quiet && git diff --staged --quiet || git commit -m "Update static and media files [ci skip]"
+          git push

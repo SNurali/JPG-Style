@@ -100,3 +100,20 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240  # если много полей в фо�
 # Настройки для корзины
 CART_SESSION_ID = 'cart'
 CART_ITEM_MAX_QUANTITY = 10
+
+# Автоматический git-коммит после collectstatic
+if not DEBUG:
+    import subprocess
+    from django.contrib.staticfiles.management.commands.collectstatic import Command as CollectstaticCommand
+
+
+    class CustomCollectstaticCommand(CollectstaticCommand):
+        def handle(self, **options):
+            super().handle(**options)
+            try:
+                subprocess.run(['python', 'manage.py', 'git_track_static'], check=True)
+            except subprocess.CalledProcessError as e:
+                print(f"Error updating Git: {e}")
+
+
+    CollectstaticCommand = CustomCollectstaticCommand
