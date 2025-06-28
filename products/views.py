@@ -12,6 +12,9 @@ TELEGRAM_CHAT_ID = "532350689"
 
 def send_order_to_telegram(order):
     try:
+        import imghdr  # Добавляем импорт
+        from telegram import Bot
+
         message = f"🛒 Новый заказ #{order.id}\n\n"
         message += f"👤 Имя: {order.customer_name}\n"
         message += f"📞 Телефон: {order.phone}\n"
@@ -23,7 +26,6 @@ def send_order_to_telegram(order):
 
         message += f"\n💰 Итого: {order.total_price} сум"
 
-        from telegram import Bot
         bot = Bot(token=TELEGRAM_TOKEN)
         bot.send_message(
             chat_id=TELEGRAM_CHAT_ID,
