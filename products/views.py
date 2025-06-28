@@ -92,12 +92,23 @@ def catalog(request):
 
 
 # Детали товара
-def product_detail(request, pk):
-    product = get_object_or_404(Product, pk=pk)
-    related_products = Product.objects.exclude(pk=pk).order_by('?')[:3]
+def product_detail(request, slug):
+    product = get_object_or_404(Product, slug=slug)
+    related_products = Product.objects.exclude(slug=slug).order_by('?')[:3]
+
+    # Формируем абсолютный URL текущей страницы
+    current_url = request.build_absolute_uri()
+
+    # Формируем OG изображение (абсолютный URL)
+    og_image_url = request.build_absolute_uri(product.image.url) if product.image else request.build_absolute_uri(static('img/og-image.jpg'))
+
     return render(request, 'products/product_detail.html', {
         'product': product,
-        'related_products': related_products
+        'related_products': related_products,
+        'current_url': current_url,
+        'og_title': product.name,
+        'og_description': product.description[:200] + '...' if len(product.description) > 200 else product.description,
+        'og_image': og_image_url,
     })
 
 

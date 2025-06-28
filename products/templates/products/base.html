@@ -2,12 +2,49 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+    <!-- End Google Tag Manager -->
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JPG-Style Smart Wash</title>
+
+    <!-- Основные мета-теги -->
+    <meta name="description" content="{% block description %}JPG-Style Smart Wash - профессиональная автохимия и средства для ухода за автомобилем в Ташкенте. Широкий ассортимент, гарантия качества.{% endblock %}">
+    <meta name="keywords" content="{% block keywords %}автохимия, уход за автомобилем, автомобильные шампуни, воски для авто, чернители резины, Ташкент{% endblock %}">
+    <meta name="author" content="JPG-Style Smart Wash">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:title" content="{% block og_title %}JPG-Style Smart Wash{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Профессиональные средства для ухода за автомобилем{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{% static 'img/og-image.jpg' %}{% endblock %}">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ request.build_absolute_uri }}">
+    <meta property="twitter:title" content="{% block twitter_title %}JPG-Style Smart Wash{% endblock %}">
+    <meta property="twitter:description" content="{% block twitter_description %}Профессиональные средства для ухода за автомобилем{% endblock %}">
+    <meta property="twitter:image" content="{% block twitter_image %}{% static 'img/og-image.jpg' %}{% endblock %}">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+
+    <!-- Hreflang для поддержки нескольких языков -->
+    <link rel="alternate" hreflang="ru" href=" https://smartwash.uz/ " />
+    <link rel="alternate" hreflang="uz" href="https://smartwash.uz/uz/ " />
+    <link rel="alternate" hreflang="x-default" href="https://smartwash.uz/ " />
+
+    <title>{% block title %}JPG-Style Smart Wash{% endblock %}</title>
+
     <!-- Локальные файлы Bootstrap -->
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css ">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
     <!-- Favicon Settings -->
@@ -15,7 +52,6 @@
     <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
     <link rel="apple-touch-icon" href="{% static 'img/apple-touch-icon.png' %}">
 
-    <meta name="description" content="Магазин автохимии JPG-Style Smart Wash – нано-шампуни, воски, чернители резины и многое другое для автомобиля.">
     <style>
         :root {
             --primary-color: #007BFF;
@@ -105,8 +141,50 @@
             animation: fadeIn 0.6s ease-out forwards;
         }
     </style>
+
+    <!-- JSON-LD структурированные данные -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org ",
+      "@type": "Organization",
+      "name": "JPG-Style Smart Wash",
+      "url": "https://smartwash.uz ",
+      "logo": "{% static 'img/logo.svg' %}",
+      "description": "Профессиональные средства для ухода за автомобилем",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "ул. 8а, дом 3",
+        "addressLocality": "Ташкент",
+        "addressRegion": "Сергелийский район",
+        "postalCode": "100000",
+        "addressCountry": "UZ"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+998501040026",
+        "contactType": "sales",
+        "email": "smartwash1986@gmail.com"
+      }
+    }
+    </script>
 </head>
 <body>
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js ", "ym");
+
+   ym(XXXXXXX, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/XXXXXXX " style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
 
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 fixed-top">
@@ -136,6 +214,15 @@
     </div>
 </nav>
 
+<!-- Хлебные крошки -->
+<nav aria-label="breadcrumb" class="mb-4 container">
+    <ol class="breadcrumb">
+        {% block breadcrumbs %}
+        <li class="breadcrumb-item"><a href="/">Главная</a></li>
+        {% endblock %}
+    </ol>
+</nav>
+
 <div class="container mt-5 pt-4">{% block content %}{% endblock %}</div>
 
 <!-- Кнопка корзины -->
@@ -148,7 +235,7 @@
     {% endwith %}
 </a>
 
-<!-- Локальные JS файлы Bootstrap -->
+<!-- JS файлы Bootstrap -->
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 <script>
     // Анимация навбара при скролле

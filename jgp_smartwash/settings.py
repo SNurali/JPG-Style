@@ -21,27 +21,31 @@ INSTALLED_APPS = [
     'sorl.thumbnail',
 ]
 
-# Thumbnail aliases
-THUMBNAIL_ALIASES = {
-    '': {
-        'carousel': {'size': (800, 400), 'crop': 'smart'},
-        'product': {'size': (400, 200), 'crop': 'center'},
-    },
-}
-THUMBNAIL_DEBUG = False
-
+# Middleware with mobile detection
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'django.middleware.gzip.GZipMiddleware',
+    'django_user_agents.middleware.UserAgentMiddleware',  # Mobile detection
 ]
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# Cache backend
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
+        'LOCATION': '127.0.0.1:11211',
+    },
+    'user_agent': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'user_agent_cache',
+    }
+}
 
 ROOT_URLCONF = 'jgp_smartwash.urls'
 
@@ -86,6 +90,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files
 MEDIA_URL = '/media/'
@@ -96,6 +101,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Telegram bot
 TELEGRAM_TOKEN = "7492480842:AAFcwTRve8yolNVvPb1OAkiustwIz35mZII"
 TELEGRAM_CHAT_ID = "532350689"
+
+# Thumbnail aliases
+THUMBNAIL_ALIASES = {
+    '': {
+        'carousel': {'size': (800, 400), 'crop': 'smart'},
+        'product': {'size': (400, 200), 'crop': 'center'},
+    },
+}
+THUMBNAIL_DEBUG = False
 
 # Убираем предупреждение UnorderedObjectListWarning
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240  # если много полей в формах
@@ -109,7 +123,6 @@ if not DEBUG:
     import subprocess
     from django.contrib.staticfiles.management.commands.collectstatic import Command as CollectstaticCommand
 
-
     class CustomCollectstaticCommand(CollectstaticCommand):
         def handle(self, **options):
             super().handle(**options)
@@ -118,5 +131,12 @@ if not DEBUG:
             except subprocess.CalledProcessError as e:
                 print(f"Error updating Git: {e}")
 
-
     CollectstaticCommand = CustomCollectstaticCommand
+
+# Предзагрузка ключевых ресурсов
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# HTTP/2 Server Push
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

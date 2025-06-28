@@ -14,10 +14,13 @@ class StaticViewSitemap(Sitemap):
 
 class ProductSitemap(Sitemap):
     changefreq = "weekly"
-    priority = 0.5
+    priority = 0.7
 
     def items(self):
         return Product.objects.all()
 
     def lastmod(self, obj):
-        return obj.id  # можно использовать дату создания/обновления товара
+        return obj.updated_at  # добавьте это поле в модель
+
+    def location(self, obj):
+        return reverse('product_detail', args=[obj.slug])
