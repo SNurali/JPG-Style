@@ -31,15 +31,15 @@
                         </div>
                     </td>
                     <td class="text-center">
-                        <form action="{% url 'update_cart' item.product.id %}" method="post" class="d-flex align-items-center justify-content-center">
+                        <form action="{% url 'update_cart' slug=item.product.slug %}" method="post" class="d-flex align-items-center justify-content-center">
                             {% csrf_token %}
                             <div class="input-group" style="width: 120px;">
-                                <button class="btn btn-outline-secondary minus-btn" type="button" data-product-id="{{ item.product.id }}">
+                                <button class="btn btn-outline-secondary minus-btn" type="button" data-product-slug="{{ item.product.slug }}">
                                     <i class="fas fa-minus"></i>
                                 </button>
                                 <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="99"
                                        class="form-control text-center quantity-input">
-                                <button class="btn btn-outline-secondary plus-btn" type="button" data-product-id="{{ item.product.id }}">
+                                <button class="btn btn-outline-secondary plus-btn" type="button" data-product-slug="{{ item.product.slug }}">
                                     <i class="fas fa-plus"></i>
                                 </button>
                             </div>
@@ -49,9 +49,9 @@
                         </form>
                     </td>
                     <td class="text-end">{{ item.product.price }} сум</td>
-                    <td class="text-end fw-bold">{{ item.total }} сум</td>
+                    <td class="text-end fw-bold">{{ item.total_price }} сум</td>
                     <td class="text-center">
-                        <a href="{% url 'remove_from_cart' item.product.id %}"
+                        <a href="{% url 'remove_from_cart' slug=item.product.slug %}"
                            class="btn btn-sm btn-outline-danger"
                            onclick="return confirm('Удалить товар из корзины?')">
                             <i class="fas fa-trash-alt"></i>
@@ -61,14 +61,14 @@
                 {% endfor %}
                 <tr class="table-light fw-bold animate__animated animate__fadeIn">
                     <td colspan="3" class="text-end">Итого:</td>
-                    <td colspan="2" class="text-end">{{ total }} сум</td>
+                    <td colspan="2" class="text-end">{{ cart_total }} сум</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
     <div class="d-flex justify-content-between align-items-center mt-4 animate__animated animate__fadeInUp">
-        <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+        <a href="{% url 'catalog' %}" class="btn btn-outline-secondary">
             <i class="fas fa-arrow-left me-2"></i> Продолжить покупки
         </a>
         <div class="d-flex gap-3">
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Авто-отправка формы при изменении количества (опционально)
+    // Авто-отправка формы при изменении количества
     document.querySelectorAll('.quantity-input').forEach(input => {
         input.addEventListener('change', function() {
             this.closest('form').querySelector('.update-btn').click();

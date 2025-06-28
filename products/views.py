@@ -1,9 +1,15 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.db import models  # Добавлен импорт models
 from .models import Product, Category, Order, OrderItem
 from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import logging
 import requests
+from django.templatetags.static import static
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from .models import Product, Category, Order, OrderItem, Wishlist
+
 
 # Настройка логгера
 logger = logging.getLogger(__name__)
@@ -64,16 +70,24 @@ def home(request):
 def catalog(request):
     categories = Category.objects.all()
     selected_category = request.GET.get('category')
+    search_query = request.GET.get('search', '').strip()
 
-    try:
-        selected_category_id = int(selected_category) if selected_category and selected_category.isdigit() else None
-    except ValueError:
-        selected_category_id = None
+    # Основной запрос товаров
+    products_list = Product.objects.all().order_by('-created_at')  # Убрали select_related для простоты
 
-    products_list = Product.objects.filter(category_id=selected_category_id).order_by(
-        '-id') if selected_category_id else Product.objects.all().order_by('-id')
+    # Фильтрация по категории если выбрана
+    if selected_category:
+        products_list = products_list.filter(category__slug=selected_category)
 
-    paginator = Paginator(products_list, 6)
+    # Поиск по названию или описанию
+    if search_query:
+        products_list = products_list.filter(
+            models.Q(name__icontains=search_query) |
+            models.Q(description__icontains=search_query)
+        )
+
+    # Пагинация
+    paginator = Paginator(products_list, 9)  # 9 товаров на странице
     page_number = request.GET.get('page')
 
     try:
@@ -83,32 +97,27 @@ def catalog(request):
     except EmptyPage:
         products = paginator.page(paginator.num_pages)
 
-    return render(request, 'products/catalog.html', {
+    context = {
         'categories': categories,
         'products': products,
-        'selected_category': selected_category_id,
-        'has_products': products_list.exists()
-    })
+        'selected_category': selected_category,
+        'search_query': search_query,
+    }
 
+    return render(request, 'products/catalog.html', context)
 
 # Детали товара
 def product_detail(request, slug):
     product = get_object_or_404(Product, slug=slug)
     related_products = Product.objects.exclude(slug=slug).order_by('?')[:3]
 
-    # Формируем абсолютный URL текущей страницы
-    current_url = request.build_absolute_uri()
-
-    # Формируем OG изображение (абсолютный URL)
-    og_image_url = request.build_absolute_uri(product.image.url) if product.image else request.build_absolute_uri(static('img/og-image.jpg'))
-
     return render(request, 'products/product_detail.html', {
         'product': product,
         'related_products': related_products,
-        'current_url': current_url,
         'og_title': product.name,
         'og_description': product.description[:200] + '...' if len(product.description) > 200 else product.description,
-        'og_image': og_image_url,
+        'og_image': request.build_absolute_uri(product.image.url) if product.image else request.build_absolute_uri(
+            static('img/og-image.jpg')),
     })
 
 
@@ -118,9 +127,9 @@ def cart(request):
     products_in_cart = []
     total = 0
 
-    for product_id, quantity in cart_items.items():
+    for product_slug, quantity in cart_items.items():
         try:
-            product = Product.objects.get(id=product_id)
+            product = Product.objects.get(slug=product_slug)
             item_total = product.price * quantity
             products_in_cart.append({
                 'product': product,
@@ -130,48 +139,51 @@ def cart(request):
             total += item_total
         except Product.DoesNotExist:
             # Если товар не найден, удаляем его из корзины
-            del request.session['cart'][product_id]
+            del request.session['cart'][product_slug]
             request.session.modified = True
             continue
 
     return render(request, 'products/cart.html', {
         'cart_items': products_in_cart,
-        'total': total,
+        'cart_total': total,
         'cart_empty': len(products_in_cart) == 0
     })
 
 
 # Добавление в корзину
-def add_to_cart(request, product_id):
+def add_to_cart(request, slug):
+    if request.method == 'POST':
+        try:
+            quantity = int(request.POST.get('quantity', 1))
+        except ValueError:
+            messages.error(request, "Некорректное количество")
+            return redirect('product_detail', slug=slug)
+
+        if quantity < 1 or quantity > 10:
+            messages.error(request, "Количество должно быть от 1 до 10")
+            return redirect('product_detail', slug=slug)
+    else:
+        quantity = 1
+
     try:
-        product = Product.objects.get(pk=product_id)
+        product = Product.objects.get(slug=slug)
     except Product.DoesNotExist:
         messages.error(request, "Такого товара нет в наличии.")
         return redirect('home')
 
-    # Получаем текущую корзину из сессии
     cart = request.session.get('cart', {})
 
-    # Преобразуем product_id в строку (для JSON-сериализации)
-    product_id_str = str(product_id)
-
-    # Увеличиваем количество товара, если он уже есть в корзине
-    if product_id_str in cart:
-        cart[product_id_str] += 1
+    if slug in cart:
+        cart[slug] += quantity
     else:
-        cart[product_id_str] = 1  # Иначе добавляем товар с количеством 1
+        cart[slug] = quantity
 
-    # Сохраняем обновленную корзину в сессии
     request.session['cart'] = cart
-    messages.success(request, f"{product.name} добавлен в корзину (теперь: {cart[product_id_str]} шт.)")
+    messages.success(request, f"{product.name} добавлен в корзину (теперь: {cart[slug]} шт.)")
 
-    # Возвращаем на предыдущую страницу или на страницу товара
-    if 'HTTP_REFERER' in request.META:
-        return redirect(request.META.get('HTTP_REFERER'))
-    return redirect('product_detail', pk=product_id)
+    return redirect(request.META.get('HTTP_REFERER', 'home'))
 
-
-def update_cart(request, product_id):
+def update_cart(request, slug):
     if request.method == 'POST':
         try:
             quantity = int(request.POST.get('quantity', 1))
@@ -180,14 +192,13 @@ def update_cart(request, product_id):
             return redirect('cart')
 
         cart = request.session.get('cart', {})
-        product_id_str = str(product_id)
 
-        if product_id_str in cart:
+        if slug in cart:
             if quantity > 0:
-                cart[product_id_str] = quantity
+                cart[slug] = quantity
                 messages.success(request, 'Количество товара обновлено!')
             else:
-                del cart[product_id_str]
+                del cart[slug]
                 messages.success(request, 'Товар удален из корзины!')
 
             request.session['cart'] = cart
@@ -204,11 +215,11 @@ def clear_cart(request):
     return redirect('cart')
 
 # Удаление из корзины
-def remove_from_cart(request, product_id):
+def remove_from_cart(request, slug):
     cart = request.session.get('cart', {})
 
-    if str(product_id) in cart:
-        del cart[str(product_id)]
+    if slug in cart:
+        del cart[slug]
         request.session['cart'] = cart
         messages.success(request, "Товар удален из корзины")
 
@@ -227,9 +238,9 @@ def checkout(request):
     products_in_cart = []
     total = 0
 
-    for product_id, qty in cart.items():
+    for product_slug, qty in cart.items():
         try:
-            product = Product.objects.get(id=product_id)
+            product = Product.objects.get(slug=product_slug)
             item_total = product.price * qty
             products_in_cart.append({
                 'product': product,
@@ -238,7 +249,7 @@ def checkout(request):
             })
             total += item_total
         except Product.DoesNotExist:
-            messages.error(request, f"Товар с ID {product_id} не найден")
+            messages.error(request, f"Товар {product_slug} не найден")
             continue
 
     if request.method == 'POST':
@@ -302,6 +313,32 @@ def order_success(request, order_id):
     except Order.DoesNotExist:
         messages.error(request, "Заказ не найден")
         return redirect('home')
+
+
+@login_required
+def add_to_wishlist(request, slug):
+    product = get_object_or_404(Product, slug=slug)
+    wishlist_item, created = Wishlist.objects.get_or_create(
+        user=request.user,
+        product=product
+    )
+    if created:
+        return JsonResponse({'status': 'added'})
+    return JsonResponse({'status': 'already_exists'})
+
+@login_required
+def remove_from_wishlist(request, slug):
+    product = get_object_or_404(Product, slug=slug)
+    Wishlist.objects.filter(
+        user=request.user,
+        product=product
+    ).delete()
+    return JsonResponse({'status': 'removed'})
+
+@login_required
+def wishlist_view(request):
+    wishlist_items = Wishlist.objects.filter(user=request.user).select_related('product')
+    return render(request, 'products/wishlist.html', {'wishlist_items': wishlist_items})
 
 # Страница контактов
 def contacts(request):

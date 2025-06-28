@@ -1,7 +1,8 @@
 User-agent: *
-Allow: /
 Disallow: /admin/
 Disallow: /cart/
 Disallow: /checkout/
 
 Sitemap: https://smartwash.uz/sitemap.xml
+
+Host: smartwash.uz

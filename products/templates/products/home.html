@@ -27,7 +27,7 @@
             <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-75 p-4 rounded-3">
                 <h3 class="fw-bold">{{ product.name }}</h3>
                 <p class="mb-0">{{ product.price }} сум</p>
-                <a href="{% url 'product_detail' product.id %}" class="btn btn-primary mt-2">
+                <a href="{{ product.get_absolute_url }}" class="btn btn-primary mt-2">
                     Подробнее
                 </a>
             </div>
@@ -65,7 +65,7 @@
                     <h5 class="card-title fw-bold">{{ product.name }}</h5>
                     <p class="card-text text-muted">{{ product.description|truncatechars:100 }}</p>
                     <div class="mt-auto">
-                        <a href="{% url 'product_detail' product.id %}" class="btn btn-primary w-100 hover-grow">
+                        <a href="{{ product.get_absolute_url }}" class="btn btn-primary w-100 hover-grow">
                             Подробнее
                         </a>
                     </div>

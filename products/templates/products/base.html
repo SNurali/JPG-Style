@@ -36,16 +36,27 @@
     <link rel="canonical" href="{{ request.build_absolute_uri }}">
 
     <!-- Hreflang для поддержки нескольких языков -->
-    <link rel="alternate" hreflang="ru" href=" https://smartwash.uz/ " />
-    <link rel="alternate" hreflang="uz" href="https://smartwash.uz/uz/ " />
-    <link rel="alternate" hreflang="x-default" href="https://smartwash.uz/ " />
+    {% if request.path == '/' or request.path == '' %}
+        <link rel="alternate" hreflang="ru" href="https://smartwash.uz/" />
+        <link rel="alternate" hreflang="uz" href="https://smartwash.uz/uz/" />
+        <link rel="alternate" hreflang="x-default" href="https://smartwash.uz/" />
+    {% elif '/uz/' in request.path %}
+        <link rel="alternate" hreflang="ru" href="https://smartwash.uz{{ request.path|slice:'3:' }}" />
+        <link rel="alternate" hreflang="uz" href="https://smartwash.uz{{ request.path }}" />
+        <link rel="alternate" hreflang="x-default" href="https://smartwash.uz{{ request.path|slice:'3:' }}" />
+    {% else %}
+        <link rel="alternate" hreflang="ru" href="https://smartwash.uz{{ request.path }}" />
+        <link rel="alternate" hreflang="uz" href="https://smartwash.uz/uz{{ request.path }}" />
+        <link rel="alternate" hreflang="x-default" href="https://smartwash.uz{{ request.path }}" />
+    {% endif %}
 
     <title>{% block title %}JPG-Style Smart Wash{% endblock %}</title>
 
     <!-- Локальные файлы Bootstrap -->
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css ">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <!-- Favicon Settings -->
     <link rel="icon" href="{% static 'favicon.ico' %}" sizes="256x256">
@@ -145,36 +156,48 @@
     <!-- JSON-LD структурированные данные -->
     <script type="application/ld+json">
     {
-      "@context": "https://schema.org ",
-      "@type": "Organization",
-      "name": "JPG-Style Smart Wash",
-      "url": "https://smartwash.uz ",
-      "logo": "{% static 'img/logo.svg' %}",
-      "description": "Профессиональные средства для ухода за автомобилем",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "ул. 8а, дом 3",
-        "addressLocality": "Ташкент",
-        "addressRegion": "Сергелийский район",
-        "postalCode": "100000",
-        "addressCountry": "UZ"
-      },
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "telephone": "+998501040026",
-        "contactType": "sales",
-        "email": "smartwash1986@gmail.com"
-      }
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "JPG-Style Smart Wash",
+        "url": "https://smartwash.uz",
+        "logo": "{% static 'img/logo.svg' %}",
+        "description": "Профессиональные средства для ухода за автомобилем",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "ул. 8а, дом 3",
+            "addressLocality": "Ташкент",
+            "addressRegion": "Сергелийский район",
+            "postalCode": "100085",
+            "addressCountry": "UZ"
+        },
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+998501040026",
+            "contactType": "sales",
+            "email": "smartwash1986@gmail.com",
+            "areaServed": "UZ",
+            "availableLanguage": ["Russian", "Uzbek"]
+        },
+        "sameAs": [
+            "https://www.instagram.com/smartwash.uz/",
+            "https://t.me/smartwashuz",
+            "https://facebook.com/smartwashuz"
+        ]
     }
     </script>
 </head>
 <body>
 
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
    m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js ", "ym");
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
 
    ym(XXXXXXX, "init", {
         clickmap:true,
@@ -183,13 +206,13 @@
         webvisor:true
    });
 </script>
-<noscript><div><img src="https://mc.yandex.ru/watch/XXXXXXX " style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<noscript><div><img src="https://mc.yandex.ru/watch/XXXXXXX" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->
 
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 fixed-top">
     <div class="container">
-        <a class="navbar-brand" href="/">
+        <a class="navbar-brand" href="{% url 'home' %}">
             <svg class="logo-svg" xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
               <circle cx="50" cy="55" r="45" fill="white" />
               <rect x="35" y="55" width="30" height="15" rx="3" ry="3" fill="#666666" />
@@ -204,11 +227,22 @@
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
+
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" href="/">Главная</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Главная</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'catalog' %}">Каталог</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'contacts' %}">Контакты</a></li>
+                <!-- Языковой переключатель -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown">
+                        {% if '/uz/' in request.path %}O'zbek{% else %}Русский{% endif %}
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{ request.path|slice:'3:' }}">Русский</a></li>
+                        <li><a class="dropdown-item" href="/uz{{ request.path }}">O'zbek</a></li>
+                    </ul>
+                </li>
             </ul>
         </div>
     </div>
@@ -218,7 +252,7 @@
 <nav aria-label="breadcrumb" class="mb-4 container">
     <ol class="breadcrumb">
         {% block breadcrumbs %}
-        <li class="breadcrumb-item"><a href="/">Главная</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Главная</a></li>
         {% endblock %}
     </ol>
 </nav>
