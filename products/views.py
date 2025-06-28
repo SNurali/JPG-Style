@@ -2,17 +2,18 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Product, Category, Order, OrderItem
 from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-import requests
 from telegram import Bot
 from telegram.error import TelegramError
+import logging
+
+# Настройка логгера
+logger = logging.getLogger(__name__)
 
 TELEGRAM_TOKEN = "7492480842:AAFcwTRve8yolNVvPb1OAkiustwIz35mZII"
 TELEGRAM_CHAT_ID = "532350689"
 
-def send_order_to_telegram(order):
-    if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID:
-        return
 
+def send_order_to_telegram(order):
     message = f"📦 Новый заказ #{order.id}\n\n"
     message += f"👤 Клиент: {order.customer_name}\n"
     message += f"📞 Телефон: {order.phone}\n"
@@ -25,20 +26,22 @@ def send_order_to_telegram(order):
     message += f"\n💰 Итого: {order.total_price} сум"
 
     try:
+        # Важно: используем синхронный клиент
+        from telegram import Bot
         bot = Bot(token=TELEGRAM_TOKEN)
+        # Синхронный вызов
         bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message, parse_mode='Markdown')
-    except TelegramError as e:
-        print("Ошибка Telegram:", e)
+    except Exception as e:
+        print(f"Ошибка отправки в Telegram: {e}")
+
 
 # Главная страница с пагинацией и слайдером
 def home(request):
     all_products = Product.objects.all().order_by('-id')
     slider_products = all_products[:6]
 
-    products_list = all_products
+    paginator = Paginator(all_products, 6)
     page = request.GET.get('page', 1)
-
-    paginator = Paginator(products_list, 6)
 
     try:
         products = paginator.page(page)
@@ -50,7 +53,7 @@ def home(request):
     return render(request, 'products/home.html', {
         'products': products,
         'slider_products': slider_products,
-        'has_products': products_list.exists(),
+        'has_products': all_products.exists(),
         'is_paginated': paginator.num_pages > 1
     })
 
@@ -60,15 +63,13 @@ def catalog(request):
     categories = Category.objects.all()
     selected_category = request.GET.get('category')
 
-    # Приводим к int, если возможно
-    selected_category_id = None
-    if selected_category and selected_category.isdigit():
-        selected_category_id = int(selected_category)
+    try:
+        selected_category_id = int(selected_category) if selected_category and selected_category.isdigit() else None
+    except ValueError:
+        selected_category_id = None
 
-    if selected_category_id:
-        products_list = Product.objects.filter(category_id=selected_category_id).order_by('-id')
-    else:
-        products_list = Product.objects.all().order_by('-id')
+    products_list = Product.objects.filter(category_id=selected_category_id).order_by(
+        '-id') if selected_category_id else Product.objects.all().order_by('-id')
 
     paginator = Paginator(products_list, 6)
     page_number = request.GET.get('page')
@@ -174,33 +175,45 @@ def checkout(request):
             continue
 
     if request.method == 'POST':
-        name = request.POST.get('name')
-        phone = request.POST.get('phone')
-        address = request.POST.get('address')
+        name = request.POST.get('name', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        address = request.POST.get('address', '').strip()
 
-        order = Order.objects.create(
-            customer_name=name,
-            phone=phone,
-            address=address,
-            total_price=total
-        )
+        if not all([name, phone, address]):
+            messages.error(request, "Пожалуйста, заполните все обязательные поля")
+            return render(request, 'products/checkout.html', {
+                'cart_items': products_in_cart,
+                'total': total
+            })
 
-        for item in products_in_cart:
-            OrderItem.objects.create(
-                order=order,
-                product=item['product'],
-                quantity=item['quantity'],
-                price=item['product'].price
+        try:
+            order = Order.objects.create(
+                customer_name=name,
+                phone=phone,
+                address=address,
+                total_price=total
             )
 
-        # Очистка корзины
-        request.session['cart'] = {}
+            for item in products_in_cart:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item['product'],
+                    quantity=item['quantity'],
+                    price=item['product'].price
+                )
 
-        # Отправка в Telegram
-        send_order_to_telegram(order)
+            # Очистка корзины
+            request.session['cart'] = {}
 
-        messages.success(request, "Спасибо за заказ!")
-        return redirect('home')
+            # Отправка в Telegram
+            send_order_to_telegram(order)
+
+            messages.success(request, "Спасибо за заказ! Мы свяжемся с вами в ближайшее время.")
+            return redirect('home')
+        except Exception as e:
+            logger.error(f"Ошибка при создании заказа: {e}")
+            messages.error(request, "Произошла ошибка при оформлении заказа. Пожалуйста, попробуйте позже.")
+            return redirect('checkout')
 
     return render(request, 'products/checkout.html', {
         'cart_items': products_in_cart,
