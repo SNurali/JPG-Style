@@ -4,7 +4,9 @@ from django.core.validators import FileExtensionValidator
 from django.urls import reverse
 from PIL import Image
 import os
+from urllib.parse import urlparse, parse_qs
 from django.contrib.auth import get_user_model
+from django_ckeditor_5.fields import CKEditor5Field
 
 
 class Category(models.Model):
@@ -115,7 +117,7 @@ class Product(models.Model):
                 # Изменяем размер, если больше 800x800
                 if img.height > 800 or img.width > 800:
                     output_size = (800, 800)
-                    img.thumbnail(output_size, Image.LANCZOS)
+                    img.thumbnail(output_size, Image.Resampling.LANCZOS)
 
                 # Определяем формат для сохранения
                 ext = os.path.splitext(img_path)[1].lower()
@@ -156,11 +158,13 @@ class Product(models.Model):
             models.Index(fields=['name']),
             models.Index(fields=['-created_at']),
         ]
+
     @property
     def is_new(self):
         """Возвращает True, если товар добавлен менее 7 дней назад"""
         from django.utils import timezone
         return (timezone.now() - self.created_at).days < 7
+
 
 class Order(models.Model):
     customer_name = models.CharField(max_length=100)
@@ -195,7 +199,9 @@ class OrderItem(models.Model):
     def get_total_price(self):
         return self.price * self.quantity
 
+
 User = get_user_model()
+
 
 class Wishlist(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -206,3 +212,59 @@ class Wishlist(models.Model):
         unique_together = ('user', 'product')  # Один товар - один раз у пользователя
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранные товары'
+
+
+class AutoChemistryPost(models.Model):
+    POST_TYPES = [
+        ('video', 'Видео'),
+        ('photo', 'Фото'),
+        ('article', 'Статья'),
+    ]
+
+    title = models.CharField(max_length=200, verbose_name="Заголовок")
+    slug = models.SlugField(max_length=200, unique=True, blank=True, verbose_name="URL-адрес")
+    post_type = models.CharField(max_length=10, choices=POST_TYPES, verbose_name="Тип поста")
+    youtube_url = models.URLField(blank=True, null=True, verbose_name="Ссылка на YouTube")
+    content = CKEditor5Field('Content', config_name='extends')
+    image = models.ImageField(
+        upload_to='autochemistry/%Y/%m/%d/',
+        blank=True,
+        null=True,
+        verbose_name="Изображение",
+        validators=[FileExtensionValidator(['jpg', 'jpeg', 'png', 'webp'])]
+    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+    is_published = models.BooleanField(default=True, verbose_name="Опубликовано")
+    views = models.PositiveIntegerField(default=0, verbose_name="Просмотры")
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.title)
+            unique_slug = base_slug
+            counter = 1
+
+            while AutoChemistryPost.objects.filter(slug=unique_slug).exists():
+                unique_slug = f"{base_slug}-{counter}"
+                counter += 1
+
+            self.slug = unique_slug
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('autochemistry_detail', kwargs={'slug': self.slug})
+
+    def get_youtube_id(self):
+        if self.youtube_url:
+            url_data = urlparse(self.youtube_url)
+            query = parse_qs(url_data.query)
+            return query.get('v', [None])[0]
+        return None
+
+    class Meta:
+        verbose_name = "Пост из мира автохимии"
+        verbose_name_plural = "Мир автохимии"
+        ordering = ['-created_at']

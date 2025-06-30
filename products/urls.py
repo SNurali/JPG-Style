@@ -2,11 +2,12 @@ from django.urls import path
 from . import views
 from django.views.generic import TemplateView
 from django.contrib.sitemaps.views import sitemap
-from products.sitemaps import StaticViewSitemap, ProductSitemap
+from products.sitemaps import StaticViewSitemap, ProductSitemap, AutoChemistrySitemap
 
 sitemaps = {
     'static': StaticViewSitemap,
-    'products': ProductSitemap
+    'products': ProductSitemap,
+    'autochemistry': AutoChemistrySitemap,
 }
 
 urlpatterns = [
@@ -23,4 +24,6 @@ urlpatterns = [
     path('order/success/<int:order_id>/', views.order_success, name='order_success'),
     path('wishlist/add/<slug:slug>/', views.add_to_wishlist, name='add_to_wishlist'),
     path('wishlist/remove/<slug:slug>/', views.remove_from_wishlist, name='remove_from_wishlist'),
+path('autochemistry/', views.autochemistry_list, name='autochemistry_list'),
+path('autochemistry/<slug:slug>/', views.autochemistry_detail, name='autochemistry_detail'),
 ]

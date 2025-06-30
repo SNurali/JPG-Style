@@ -1,6 +1,7 @@
 from django.contrib import admin
-from .models import Product, Category, Order, OrderItem
-
+from django import forms
+from .models import Product, Category, Order, OrderItem, AutoChemistryPost
+from django_ckeditor_5.widgets import CKEditor5Widget
 
 # Inline для отображения товаров в заказе
 class OrderItemInline(admin.TabularInline):
@@ -67,3 +68,36 @@ class OrderItemAdmin(admin.ModelAdmin):
         return obj.quantity * obj.price
 
     get_total.short_description = 'Общая цена'
+
+
+class AutoChemistryPostAdminForm(forms.ModelForm):
+    class Meta:
+        model = AutoChemistryPost
+        fields = '__all__'
+        widgets = {
+            'content': CKEditor5Widget(
+                attrs={"class": "django_ckeditor_5"}, config_name='extends'
+            ),
+        }
+
+
+@admin.register(AutoChemistryPost)
+class AutoChemistryPostAdmin(admin.ModelAdmin):
+    form = AutoChemistryPostAdminForm
+    list_display = ('title', 'post_type', 'is_published', 'created_at', 'views')
+    list_filter = ('post_type', 'is_published')
+    search_fields = ('title', 'content')
+    prepopulated_fields = {'slug': ('title',)}
+    readonly_fields = ('views', 'created_at', 'updated_at')
+    fieldsets = (
+        (None, {
+            'fields': ('title', 'slug', 'post_type', 'is_published')
+        }),
+        ('Контент', {
+            'fields': ('youtube_url', 'image', 'content')
+        }),
+        ('Статистика', {
+            'fields': ('views', 'created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )

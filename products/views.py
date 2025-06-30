@@ -8,7 +8,7 @@ import requests
 from django.templatetags.static import static
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from .models import Product, Category, Order, OrderItem, Wishlist
+from .models import Product, Category, Order, OrderItem, Wishlist, AutoChemistryPost
 
 
 # Настройка логгера
@@ -343,3 +343,45 @@ def wishlist_view(request):
 # Страница контактов
 def contacts(request):
     return render(request, 'products/contacts.html')
+
+
+def autochemistry_list(request):
+    posts = AutoChemistryPost.objects.filter(is_published=True).order_by('-created_at')
+
+    # Пагинация
+    paginator = Paginator(posts, 9)
+    page_number = request.GET.get('page')
+
+    try:
+        posts = paginator.page(page_number)
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
+
+    return render(request, 'products/autochemistry_list.html', {
+        'posts': posts,
+        'page_title': 'Мир автохимии - полезные статьи и видео'
+    })
+
+
+def autochemistry_detail(request, slug):
+    post = get_object_or_404(AutoChemistryPost, slug=slug, is_published=True)
+
+    # Увеличиваем счетчик просмотров
+    post.views += 1
+    post.save()
+
+    # Получаем похожие посты
+    similar_posts = AutoChemistryPost.objects.filter(
+        is_published=True
+    ).exclude(
+        id=post.id
+    ).order_by('-created_at')[:3]
+
+    return render(request, 'products/autochemistry_detail.html', {
+        'post': post,
+        'similar_posts': similar_posts,
+        'youtube_id': post.get_youtube_id(),
+        'page_title': post.title
+    })

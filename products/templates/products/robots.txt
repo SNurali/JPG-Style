@@ -2,6 +2,8 @@ User-agent: *
 Disallow: /admin/
 Disallow: /cart/
 Disallow: /checkout/
+Allow: /autochemistry/
+Allow: /autochemistry/*
 
 Sitemap: https://smartwash.uz/sitemap.xml
 

@@ -1,6 +1,8 @@
 # products/sitemaps.py
 from django.contrib.sitemaps import Sitemap
-from .models import Product
+from django.urls import reverse
+
+from .models import Product, AutoChemistryPost
 
 class StaticViewSitemap(Sitemap):
     priority = 0.5
@@ -22,3 +24,13 @@ class ProductSitemap(Sitemap):
 
     def location(self, item):
         return reverse('product_detail', args=[str(item.slug)])
+
+class AutoChemistrySitemap(Sitemap):
+    changefreq = 'weekly'
+    priority = 0.6
+
+    def items(self):
+        return AutoChemistryPost.objects.filter(is_published=True)
+
+    def location(self, item):
+        return reverse('autochemistry_detail', args=[str(item.slug)])
