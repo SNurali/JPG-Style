@@ -1,0 +1,283 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta name="yandex-verification" content="04adbf52a5b45806" />
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+    <!-- End Google Tag Manager -->
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Основные мета-теги -->
+    <meta name="description" content="{% block description %}JPG-Style Smart Wash - профессиональная автохимия и средства для ухода за автомобилем в Ташкенте. Широкий ассортимент, гарантия качества.{% endblock %}">
+    <meta name="keywords" content="{% block keywords %}автохимия, уход за автомобилем, автомобильные шампуни, воски для авто, чернители резины, Ташкент{% endblock %}">
+    <meta name="author" content="JPG-Style Smart Wash">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:title" content="{% block og_title %}JPG-Style Smart Wash{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Профессиональные средства для ухода за автомобилем{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{% static 'img/og-image.jpg' %}{% endblock %}">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ request.build_absolute_uri }}">
+    <meta property="twitter:title" content="{% block twitter_title %}JPG-Style Smart Wash{% endblock %}">
+    <meta property="twitter:description" content="{% block twitter_description %}Профессиональные средства для ухода за автомобилем{% endblock %}">
+    <meta property="twitter:image" content="{% block twitter_image %}{% static 'img/og-image.jpg' %}{% endblock %}">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+
+    <!-- Hreflang для поддержки нескольких языков -->
+    {% if request.path == '/' or request.path == '' %}
+        <link rel="alternate" hreflang="ru" href="https://smartwash.uz/" />
+        <link rel="alternate" hreflang="uz" href="https://smartwash.uz/uz/" />
+        <link rel="alternate" hreflang="x-default" href="https://smartwash.uz/" />
+    {% elif '/uz/' in request.path %}
+        <link rel="alternate" hreflang="ru" href="https://smartwash.uz{{ request.path|slice:'3:' }}" />
+        <link rel="alternate" hreflang="uz" href="https://smartwash.uz{{ request.path }}" />
+        <link rel="alternate" hreflang="x-default" href="https://smartwash.uz{{ request.path|slice:'3:' }}" />
+    {% else %}
+        <link rel="alternate" hreflang="ru" href="https://smartwash.uz{{ request.path }}" />
+        <link rel="alternate" hreflang="uz" href="https://smartwash.uz/uz{{ request.path }}" />
+        <link rel="alternate" hreflang="x-default" href="https://smartwash.uz{{ request.path }}" />
+    {% endif %}
+
+    <title>{% block title %}JPG-Style Smart Wash{% endblock %}</title>
+
+    <!-- Локальные файлы Bootstrap -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Favicon Settings -->
+    <link rel="icon" href="{% static 'favicon.ico' %}" sizes="256x256">
+    <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="{% static 'img/apple-touch-icon.png' %}">
+
+    <style>
+        :root {
+            --primary-color: #007BFF;
+            --secondary-color: #6c757d;
+            --accent-color: #dc3545;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+
+        /* Логотип в навбаре */
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .logo-svg {
+            width: 42px;
+            height: 42px;
+            transition: all 0.6s cubic-bezier(0.68, -0.6, 0.32, 1.6);
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
+        }
+
+        .navbar-brand:hover .logo-svg {
+            transform: rotate(360deg) scale(1.2);
+        }
+
+        /* Кнопка корзины */
+        .floating-cart {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            background-color: var(--accent-color);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(220, 53, 69, 0.4);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(220, 53, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+        }
+
+        .floating-cart:hover {
+            transform: scale(1.1) rotate(10deg);
+            animation: none;
+            box-shadow: 0 6px 25px rgba(220, 53, 69, 0.6);
+        }
+
+        .floating-cart .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: white;
+            color: var(--accent-color);
+            border-radius: 50%;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            font-weight: bold;
+            transform: scale(1);
+            transition: transform 0.2s ease;
+        }
+
+        .floating-cart:hover .cart-count {
+            transform: scale(1.2);
+        }
+
+        /* Анимация появления страницы */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .container {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+    </style>
+
+    <!-- JSON-LD структурированные данные -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "JPG-Style Smart Wash",
+        "url": "https://smartwash.uz",
+        "logo": "{% static 'img/logo.svg' %}",
+        "description": "Профессиональные средства для ухода за автомобилем",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "ул. 8а, дом 3",
+            "addressLocality": "Ташкент",
+            "addressRegion": "Сергелийский район",
+            "postalCode": "100085",
+            "addressCountry": "UZ"
+        },
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+998501040026",
+            "contactType": "sales",
+            "email": "smartwash1986@gmail.com",
+            "areaServed": "UZ",
+            "availableLanguage": ["Russian", "Uzbek"]
+        },
+        "sameAs": [
+            "https://www.instagram.com/smartwash.uz/",
+            "https://t.me/smartwashuz",
+            "https://facebook.com/smartwashuz"
+        ]
+    }
+    </script>
+</head>
+<body>
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(XXXXXXX, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/XXXXXXX" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'home' %}">
+            <svg class="logo-svg" xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+              <circle cx="50" cy="55" r="45" fill="white" />
+              <rect x="35" y="55" width="30" height="15" rx="3" ry="3" fill="#666666" />
+              <circle cx="40" cy="75" r="5" fill="#666666" />
+              <circle cx="60" cy="75" r="5" fill="#666666" />
+              <rect x="38" y="58" width="10" height="6" fill="#FFFFFF" />
+              <rect x="52" y="58" width="10" height="6" fill="#FFFFFF" />
+            </svg>
+            JPG-Style Smart Wash
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Главная</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'catalog' %}">Каталог</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'contacts' %}">Контакты</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'autochemistry_list' %}">Мир автохимии</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Хлебные крошки -->
+<nav aria-label="breadcrumb" class="mb-4 container">
+    <ol class="breadcrumb">
+        {% block breadcrumbs %}
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Главная</a></li>
+        {% endblock %}
+    </ol>
+</nav>
+
+<div class="container mt-5 pt-4">{% block content %}{% endblock %}</div>
+
+<!-- Кнопка корзины -->
+<a href="{% url 'cart' %}" class="floating-cart">
+    🛒
+    {% with request.session.cart|length as cart_count %}
+        {% if cart_count > 0 %}
+            <span class="cart-count">{{ cart_count }}</span>
+        {% endif %}
+    {% endwith %}
+</a>
+
+<!-- JS файлы Bootstrap -->
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script>
+    // Анимация навбара при скролле
+    window.addEventListener('scroll', function() {
+        const navbar = document.querySelector('.navbar');
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+
+    // Эффект волны для всех кнопок
+    document.querySelectorAll('.btn, .nav-link, .floating-cart').forEach(button => {
+        button.classList.add('wave-effect');
+    });
+</script>
+</body>
+</html>

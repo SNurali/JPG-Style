@@ -1,0 +1,270 @@
+/* Общие стили */
+body {
+    font-family: 'Segoe UI', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f8f9fa;
+}
+
+/* Анимация появления страницы */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.container {
+    animation: fadeIn 0.6s ease-out forwards;
+}
+
+/* Навигационная панель - улучшенная анимация */
+.navbar {
+    font-weight: 500;
+    transition: all 0.4s ease;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+}
+
+.navbar.scrolled {
+    background-color: rgba(13, 110, 253, 0.95) !important;
+    backdrop-filter: blur(10px);
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.nav-link {
+    position: relative;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: white;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.nav-link:hover::after {
+    width: 70%;
+}
+
+/* Слайдер - улучшенные анимации */
+.carousel-item img {
+    object-fit: cover;
+    height: 400px;
+    transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    filter: brightness(0.9);
+}
+
+.carousel-item.active img {
+    transform: scale(1);
+    filter: brightness(1);
+}
+
+.carousel-item-next img,
+.carousel-item-prev img {
+    transform: scale(1.05);
+}
+
+.carousel-caption {
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    border-radius: 10px;
+    padding: 20px;
+    animation: fadeIn 0.8s ease-out;
+}
+
+/* Карточки товаров - 3D эффект */
+.card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border: none;
+    background-color: #fff;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    border-radius: 12px;
+    overflow: hidden;
+    transform: translateY(0);
+}
+
+.card:hover {
+    transform: translateY(-10px) rotateX(5deg);
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.15), 0 10px 10px rgba(0, 0, 0, 0.12);
+}
+
+.card-img-top {
+    object-fit: cover;
+    height: 200px;
+    transition: transform 0.5s ease, filter 0.3s ease;
+    filter: saturate(0.9);
+}
+
+.card:hover .card-img-top {
+    transform: scale(1.05);
+    filter: saturate(1.2);
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1.5rem;
+    flex: 1 1 auto;
+    transition: all 0.3s ease;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+    position: relative;
+    display: inline-block;
+}
+
+.card-title::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 50px;
+    height: 2px;
+    background: #007bff;
+    transition: width 0.3s ease;
+}
+
+.card:hover .card-title::after {
+    width: 100px;
+}
+
+/* Эффекты при наведении - параллакс */
+.hover-parallax {
+    transition: all 0.5s ease;
+    transform-style: preserve-3d;
+}
+
+.hover-parallax:hover {
+    transform: perspective(1000px) rotateY(5deg) rotateX(5deg);
+}
+
+/* Плавающая кнопка корзины - пульсация */
+.floating-cart {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    background-color: #dc3545;
+    color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(220, 53, 69, 0.4);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    animation: pulse 2s infinite;
+}
+
+.floating-cart:hover {
+    transform: scale(1.1) rotate(10deg);
+    animation: none;
+    box-shadow: 0 6px 25px rgba(220, 53, 69, 0.6);
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(220, 53, 69, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+}
+
+.floating-cart .cart-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: white;
+    color: #dc3545;
+    border-radius: 50%;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    font-weight: bold;
+    transform: scale(1);
+    transition: transform 0.2s ease;
+}
+
+.floating-cart:hover .cart-count {
+    transform: scale(1.2);
+}
+
+/* Логотип - улучшенная анимация */
+.logo-svg {
+    width: 42px;
+    height: 42px;
+    transition: all 0.6s cubic-bezier(0.68, -0.6, 0.32, 1.6);
+    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
+}
+
+.navbar-brand:hover .logo-svg {
+    transform: rotate(360deg) scale(1.2);
+}
+
+/* Эффект волны при нажатии */
+.wave-effect {
+    position: relative;
+    overflow: hidden;
+}
+
+.wave-effect:after {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+    background-repeat: no-repeat;
+    background-position: 50%;
+    transform: scale(10, 10);
+    opacity: 0;
+    transition: transform .5s, opacity 1s;
+}
+
+.wave-effect:active:after {
+    transform: scale(0, 0);
+    opacity: .3;
+    transition: 0s;
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 768px) {
+    .carousel-item img {
+        height: 250px;
+    }
+
+    .card-img-top {
+        height: 150px;
+    }
+
+    .card-title {
+        font-size: 1.1rem;
+    }
+
+    .fs-5 {
+        font-size: 0.95rem !important;
+    }
+
+    .btn {
+        font-size: 0.95rem;
+        padding: 0.4rem 0.8rem;
+    }
+
+    .navbar.scrolled {
+        backdrop-filter: none;
+    }
+}
