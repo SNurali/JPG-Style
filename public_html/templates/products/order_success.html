@@ -1,0 +1,26 @@
+{% extends "products/base.html" %}
+{% block content %}
+<div class="container my-5 text-center">
+    <div class="alert alert-success">
+        <h2 class="mb-4">Спасибо за ваш заказ!</h2>
+        <p>Номер вашего заказа: <strong>#{{ order.id }}</strong></p>
+        <p>Мы свяжемся с вами в ближайшее время для подтверждения.</p>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4>Детали заказа</h4>
+        </div>
+        <div class="card-body">
+            <p><strong>Имя:</strong> {{ order.customer_name }}</p>
+            <p><strong>Телефон:</strong> {{ order.phone }}</p>
+            <p><strong>Адрес:</strong> {{ order.address }}</p>
+            <p><strong>Сумма заказа:</strong> {{ order.total_price }} сум</p>
+        </div>
+    </div>
+
+    <a href="{% url 'home' %}" class="btn btn-primary mt-4">
+        Вернуться на главную
+    </a>
+</div>
+{% endblock %}

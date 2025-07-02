@@ -1,0 +1,23 @@
+RewriteEngine On
+
+# === CloudLinux Passenger Config (НЕ УДАЛЯТЬ!) ===
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION BEGIN
+PassengerAppRoot "/home/smartwa2/jpg_style"
+PassengerBaseURI "/"
+PassengerPython "/home/smartwa2/virtualenv/jpg_style/3.10/bin/python"
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION END
+
+# === Перенаправление HTTP → HTTPS ===
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# === Защита от горячих ссылок (Hotlink Protection) ===
+RewriteCond %{HTTP_REFERER} !^http://smartwash.uz/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://smartwash.uz$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.smartwash.uz/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^http://www.smartwash.uz$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://smartwash.uz/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://smartwash.uz$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://www.smartwash.uz/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://www.smartwash.uz$      [NC]
+RewriteRule .*\.(jpg|jpeg|gif|png|bmp)$ - [F,NC]

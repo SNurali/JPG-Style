@@ -1,0 +1,134 @@
+{% extends "products/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5 animate__animated animate__fadeIn">
+    <h2 class="mb-4 fw-bold">Оформление заказа</h2>
+
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-light py-3">
+                    <h4 class="mb-0"><i class="fas fa-user-circle me-2"></i>Ваши данные</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="checkout-form" novalidate>
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="name" class="form-label">ФИО *</label>
+                            <input type="text" class="form-control" id="name" name="name"
+                                   required placeholder="Иванов Иван Иванович">
+                            <div class="invalid-feedback">Пожалуйста, укажите ваше ФИО</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Телефон *</label>
+                            <input type="tel" class="form-control" id="phone" name="phone"
+                                   required placeholder="+998901234567">
+                            <div class="invalid-feedback">Пожалуйста, укажите корректный номер телефона</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Адрес доставки *</label>
+                            <textarea class="form-control" id="address" name="address"
+                                      rows="3" required placeholder="Город, улица, дом, квартира"></textarea>
+                            <div class="invalid-feedback">Пожалуйста, укажите адрес доставки</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="comments" class="form-label">Комментарий к заказу</label>
+                            <textarea class="form-control" id="comments" name="comments"
+                                      rows="2" placeholder="Дополнительные пожелания"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-success btn-lg w-100 py-3 mt-2 hover-grow">
+                            <i class="fas fa-check-circle me-2"></i>Подтвердить заказ
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light py-3">
+                    <h4 class="mb-0"><i class="fas fa-shopping-cart me-2"></i>Ваш заказ</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group mb-3">
+                        {% for item in cart_items %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                            <div class="d-flex align-items-center">
+                                <img src="{{ item.product.image.url }}"
+                                     class="me-3 rounded-2"
+                                     width="60"
+                                     height="60"
+                                     alt="{{ item.product.name }}"
+                                     style="object-fit: cover;">
+                                <div>
+                                    <strong>{{ item.product.name }}</strong>
+                                    <div class="text-muted small">Кол-во: {{ item.quantity }} × {{ item.product.price }} сум</div>
+                                </div>
+                            </div>
+                            <span class="fw-bold">{{ item.total }} сум</span>
+                        </li>
+                        {% endfor %}
+
+                        <li class="list-group-item d-flex justify-content-between align-items-center bg-light fw-bold py-3">
+                            <span>Итого:</span>
+                            <span class="text-primary fs-5">{{ total }} сум</span>
+                        </li>
+                    </ul>
+
+                    <div class="alert alert-info mt-4">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <div>
+                                <strong>Способы оплаты</strong>
+                                <p class="mb-0 small">Наличными при получении или онлайн переводом</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'catalog' %}" class="btn btn-outline-secondary w-100 mt-2">
+                        <i class="fas fa-arrow-left me-2"></i>Вернуться в каталог
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Валидация формы
+    const form = document.getElementById('checkout-form');
+    form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    }, false);
+
+    // Маска для телефона
+    const phoneInput = document.getElementById('phone');
+    phoneInput.addEventListener('input', function() {
+        this.value = this.value.replace(/[^\d+]/g, '');
+    });
+});
+</script>
+
+<style>
+.hover-grow {
+    transition: transform 0.2s ease;
+}
+.hover-grow:hover {
+    transform: scale(1.02);
+}
+.list-group-item {
+    transition: background-color 0.2s ease;
+}
+</style>
+{% endblock %}
