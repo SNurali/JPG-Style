@@ -13,8 +13,9 @@ sitemaps = {
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('products.urls')),  # ваше приложение
-    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='sitemap'),  # <--- sitemap ЗДЕСЬ!
+    path('ckeditor5/', include('django_ckeditor_5.urls')),  # ✅ добавлено
+    path('', include('products.urls')),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='sitemap'),
 ]
 
 if settings.DEBUG:

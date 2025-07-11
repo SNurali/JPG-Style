@@ -9,7 +9,8 @@ from django.templatetags.static import static
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from .models import Product, Category, Order, OrderItem, Wishlist, AutoChemistryPost
-
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
 
 # Настройка логгера
 logger = logging.getLogger(__name__)
@@ -150,38 +151,50 @@ def cart(request):
     })
 
 
-# Добавление в корзину
 def add_to_cart(request, slug):
     if request.method == 'POST':
         try:
             quantity = int(request.POST.get('quantity', 1))
         except ValueError:
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'message': "Некорректное количество"}, status=400)
             messages.error(request, "Некорректное количество")
             return redirect('product_detail', slug=slug)
 
         if quantity < 1 or quantity > 10:
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'message': "Количество должно быть от 1 до 10"}, status=400)
             messages.error(request, "Количество должно быть от 1 до 10")
             return redirect('product_detail', slug=slug)
-    else:
-        quantity = 1
 
-    try:
-        product = Product.objects.get(slug=slug)
-    except Product.DoesNotExist:
-        messages.error(request, "Такого товара нет в наличии.")
-        return redirect('home')
+        try:
+            product = Product.objects.get(slug=slug)
+        except Product.DoesNotExist:
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'message': "Товар не найден"}, status=404)
+            messages.error(request, "Такого товара нет в наличии.")
+            return redirect('home')
 
-    cart = request.session.get('cart', {})
+        cart = request.session.get('cart', {})
 
-    if slug in cart:
-        cart[slug] += quantity
-    else:
-        cart[slug] = quantity
+        if slug in cart:
+            cart[slug] += quantity
+        else:
+            cart[slug] = quantity
 
-    request.session['cart'] = cart
-    messages.success(request, f"{product.name} добавлен в корзину (теперь: {cart[slug]} шт.)")
+        request.session['cart'] = cart
 
-    return redirect(request.META.get('HTTP_REFERER', 'home'))
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': True,
+                'message': f"{product.name} добавлен в корзину (теперь: {cart[slug]} шт.)",
+                'count': sum(cart.values())
+            })
+
+        messages.success(request, f"{product.name} добавлен в корзину (теперь: {cart[slug]} шт.)")
+        return redirect(request.META.get('HTTP_REFERER', 'home'))
+
+    return JsonResponse({'success': False, 'message': "Метод не разрешён"}, status=405)
 
 def update_cart(request, slug):
     if request.method == 'POST':
