@@ -18,14 +18,26 @@
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
     <meta property="og:title" content="{% block og_title %}JPG-Style Smart Wash{% endblock %}">
     <meta property="og:description" content="{% block og_description %}Автохимия и средства для ухода за автомобилем в Ташкенте{% endblock %}">
-    <meta property="og:image" content="{% block og_image %}{{ og_image|default:"https://smartwash.uz/static/img/og-image.jpg" }}{% endblock %}">
+    {% block og_image %}
+        {% if og_image %}
+            <meta property="og:image" content="{{ og_image }}">
+        {% else %}
+            <meta property="og:image" content="https://smartwash.uz/static/img/og-image.jpg">
+        {% endif %}
+    {% endblock %}
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ request.build_absolute_uri }}">
     <meta name="twitter:title" content="{% block twitter_title %}JPG-Style Smart Wash{% endblock %}">
     <meta name="twitter:description" content="{% block twitter_description %}Средства для ухода за авто в Узбекистане{% endblock %}">
-    <meta name="twitter:image" content="{% block twitter_image %}{{ og_image|default:"https://smartwash.uz/static/img/og-image.jpg" }}{% endblock %}">
+    {% block twitter_image %}
+        {% if og_image %}
+            <meta name="twitter:image" content="{{ og_image }}">
+        {% else %}
+            <meta name="twitter:image" content="https://smartwash.uz/static/img/og-image.jpg">
+        {% endif %}
+    {% endblock %}
 
     <!-- Hreflang -->
     {% if request.path == '/' %}
@@ -83,20 +95,17 @@
     <!-- Google Tag Manager -->
     <script>
     (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});
-    var f=d.getElementsByTagName(s)[0], j=d.createElement(s), dl=l!='dataLayer'?'&l='+l:''; 
-    j.async=true; j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl; 
+    var f=d.getElementsByTagName(s)[0], j=d.createElement(s), dl=l!='dataLayer'?'&l='+l:'';
+    j.async=true; j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
     f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-T5P2DN9');
     </script>
-    <!-- End GTM -->
 </head>
 <body>
 
 <!-- Google Tag Manager (noscript) -->
-<noscript>
-<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T5P2DN9"
-height="0" width="0" style="display:none;visibility:hidden"></iframe>
-</noscript>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T5P2DN9"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <!-- Yandex.Metrika -->
 <script type="text/javascript">
@@ -112,9 +121,7 @@ ym(103175232, "init", {
     webvisor:true
 });
 </script>
-<noscript>
-<div><img src="https://mc.yandex.ru/watch/103175232" style="position:absolute; left:-9999px;" alt="" /></div>
-</noscript>
+<noscript><div><img src="https://mc.yandex.ru/watch/103175232" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 fixed-top">
@@ -157,28 +164,87 @@ ym(103175232, "init", {
 
 <!-- Кнопка корзины -->
 <a href="{% url 'cart' %}" class="floating-cart">
-    🛒
-    {% with request.session.cart|length as cart_count %}
-        {% if cart_count > 0 %}
-            <span class="cart-count">{{ cart_count }}</span>
-        {% endif %}
-    {% endwith %}
+    <div class="cart-icon-wrapper">
+        <i class="fas fa-shopping-cart"></i>
+        {% with request.session.cart|length as cart_count %}
+            {% if cart_count > 0 %}
+                <span class="cart-count">{{ cart_count }}</span>
+            {% endif %}
+        {% endwith %}
+    </div>
 </a>
+
+
 
 <!-- Скрипты -->
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 <script>
-    // Navbar scroll
     window.addEventListener('scroll', function() {
         const navbar = document.querySelector('.navbar');
         navbar.classList.toggle('scrolled', window.scrollY > 50);
     });
 
-    // Button wave effect
     document.querySelectorAll('.btn, .nav-link, .floating-cart').forEach(button => {
         button.classList.add('wave-effect');
     });
 </script>
+
+<style>
+.floating-cart {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #0d6efd;
+    color: white;
+    padding: 16px;
+    border-radius: 50%;
+    font-size: 24px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    z-index: 9999;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+}
+
+.floating-cart:hover {
+    background-color: #084298;
+}
+
+.cart-icon-wrapper {
+    position: relative;
+    width: 24px;
+    height: 24px;
+}
+
+.cart-icon-wrapper i {
+    font-size: 28px;
+}
+
+.cart-count {
+    position: absolute;
+    top: -10px;
+    right: -12px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    min-width: 20px;
+    height: 20px;
+    font-size: 12px;
+    line-height: 20px;
+    text-align: center;
+    padding: 0 6px;
+    font-weight: bold;
+    box-shadow: 0 0 0 2px white;
+}
+</style>
+
+
+
+
 
 </body>
 </html>
