@@ -3,39 +3,25 @@
 {% block title %}{{ product.name }} — Купить в Ташкенте | Smart Wash{% endblock %}
 {% block description %}Купить {{ product.name }} по доступной цене. Описание, характеристики, доставка по Ташкенту. SmartWash — автохимия нового уровня.{% endblock %}
 
-{% block og_title %}{{ product.name }} — JPG-Style Smart Wash{% endblock %}
-{% block og_description %}{{ product.description|striptags|truncatechars:160 }}{% endblock %}
-{% block og_image %}{{ request.build_absolute_uri|cut:" " }}{{ product.image.url }}{% endblock %}
-{% block twitter_title %}{{ product.name }}{% endblock %}
-{% block twitter_description %}{{ product.description|striptags|truncatechars:160 }}{% endblock %}
-{% block twitter_image %}{{ request.build_absolute_uri|cut:" " }}{{ product.image.url }}{% endblock %}
-
-{% block breadcrumbs %}
-{{ block.super }}
-<li class="breadcrumb-item"><a href="{% url 'catalog' %}">Каталог</a></li>
-<li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
-{% endblock %}
-
 {% block content %}
 <div class="container my-5 animate__animated animate__fadeIn">
-
-    <!-- JSON-LD -->
+    <!-- ✅ JSON-LD структура -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "Product",
       "name": "{{ product.name|escapejs }}",
       "description": "{{ product.description|striptags|truncatechars:160|escapejs }}",
-      "image": "{{ request.build_absolute_uri|cut:' ' }}{{ product.image.url }}",
+      "image": "{{ request.build_absolute_uri }}{{ product.image.url }}",
       "brand": {
         "@type": "Brand",
         "name": "JPG-Style Smart Wash"
       },
       "offers": {
         "@type": "Offer",
-        "url": "{{ request.build_absolute_uri|cut:' ' }}",
+        "url": "{{ request.build_absolute_uri }}",
         "priceCurrency": "UZS",
-        "price": {{ product.price|floatformat:"0" }},
+        "price": {{ product.price }},
         "availability": "https://schema.org/InStock",
         "itemCondition": "https://schema.org/NewCondition"
       },
@@ -47,55 +33,83 @@
     }
     </script>
 
-    <div class="row g-4 align-items-start">
-        <!-- Картинка -->
+    <div class="row g-4 align-items-center">
+        <!-- Изображение товара -->
         <div class="col-md-6">
-            <img src="{{ product.image.url }}" class="img-fluid rounded-3 shadow-sm w-100" alt="{{ product.name }}" loading="lazy">
+            <div class="position-relative overflow-hidden rounded-3 shadow-sm">
+                <img src="{{ product.image.url }}" class="img-fluid w-100 rounded-3 transition hover-zoom" alt="{{ product.name }}" loading="lazy">
+                <span class="position-absolute top-0 end-0 m-2">
+                    <span class="badge bg-danger rounded-pill fs-6 animate__animated animate__pulse animate__infinite">Новинка</span>
+                </span>
+            </div>
         </div>
 
-        <!-- Информация -->
+        <!-- Информация о товаре -->
         <div class="col-md-6">
-            <h1 class="fw-bold">{{ product.name }}</h1>
-            <div class="mb-3">
-                <span class="fs-3 text-primary fw-bold">{{ product.price }} сум</span>
+            <h1 class="mb-3 fw-bold">{{ product.name }}</h1>
+
+            <!-- Цена -->
+            <div class="d-flex align-items-center mb-3">
+                <span class="fs-3 text-primary fw-bold me-3">{{ product.price }} сум</span>
                 {% if product.old_price %}
-                    <span class="text-decoration-line-through text-muted fs-5 ms-3">{{ product.old_price }} сум</span>
+                    <span class="text-decoration-line-through text-muted fs-5">{{ product.old_price }} сум</span>
                     <span class="badge bg-success ms-2">Скидка {{ product.get_discount_percent }}%</span>
                 {% endif %}
             </div>
 
-            <div class="mb-3">
-                <div class="text-warning">
-                    {% for i in "12345" %}
-                        {% if forloop.counter <= product.rating %}
-                            <i class="fas fa-star"></i>
-                        {% else %}
-                            <i class="far fa-star"></i>
-                        {% endif %}
-                    {% endfor %}
+            <!-- Рейтинг -->
+            <div class="mb-4">
+                <div class="d-flex align-items-center mb-2">
+                    <div class="text-warning me-2">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= product.rating %}
+                                <i class="fas fa-star"></i>
+                            {% else %}
+                                <i class="far fa-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <span class="text-muted">({{ product.reviews_count }} отзывов)</span>
+                    <a href="#reviews" class="ms-3 small">Оставить отзыв</a>
                 </div>
-                <small class="text-muted">({{ product.reviews_count }} отзывов)</small>
+
+                <!-- Описание товара -->
+                <div class="product-description">
+                    {{ product.description|linebreaks }}
+                </div>
             </div>
 
+            <!-- Форма добавления в корзину -->
             <form action="{% url 'add_to_cart' slug=product.slug %}" method="post" id="add-to-cart-form" class="mb-4">
                 {% csrf_token %}
-                <div class="input-group mb-3" style="max-width: 200px;">
-                    <button type="button" class="btn btn-outline-secondary quantity-minus">−</button>
-                    <input type="number" name="quantity" id="quantity" class="form-control text-center" value="1" min="1" max="10">
-                    <button type="button" class="btn btn-outline-secondary quantity-plus">+</button>
+                <div class="row g-3 align-items-center mb-3">
+                    <div class="col-auto">
+                        <label for="quantity" class="col-form-label">Количество:</label>
+                    </div>
+                    <div class="col-auto">
+                        <div class="input-group" style="width: 120px;">
+                            <button type="button" class="btn btn-outline-secondary quantity-minus">−</button>
+                            <input type="number" id="quantity" name="quantity" class="form-control text-center" value="1" min="1" max="10">
+                            <button type="button" class="btn btn-outline-secondary quantity-plus">+</button>
+                        </div>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-success w-100">Добавить в корзину</button>
+                <button type="submit" class="btn btn-success btn-lg w-100 py-3">
+                    <i class="fas fa-cart-plus me-2"></i>Добавить в корзину
+                </button>
             </form>
 
+            <!-- Доставка -->
             <div class="alert alert-info d-flex align-items-center">
                 <i class="fas fa-truck me-2"></i>
                 <div>
-                    Бесплатная доставка при заказе от 500,000 сум<br>
+                    <strong>Бесплатная доставка</strong> при заказе от 500,000 сум<br>
                     <small class="text-muted">Доставка по Ташкенту 1–2 дня</small>
                 </div>
             </div>
 
-            <div class="d-flex gap-2">
+            <!-- Кнопки действий -->
+            <div class="d-flex flex-wrap gap-2 mt-3">
                 <button class="btn btn-outline-danger" id="wishlist-btn-{{ product.slug }}" onclick="toggleWishlist('{{ product.slug }}')">
                     {% if product.slug in user_wishlist %}
                         <i class="fas fa-heart me-2"></i>В избранном
@@ -109,35 +123,17 @@
             </div>
         </div>
     </div>
-
-    <!-- ✅ Описание товара -->
-    <div class="mt-5">
-        <h2 class="fw-bold mb-3">Описание товара</h2>
-        <div class="product-description">
-            {{ product.description|linebreaks }}
-        </div>
-    </div>
 </div>
 
-<!-- JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- JS специфичный для страницы продукта -->
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    document.querySelector('.quantity-plus').addEventListener('click', () => {
-        const input = document.getElementById('quantity');
-        let value = parseInt(input.value);
-        if (value < 10) input.value = value + 1;
-    });
-
-    document.querySelector('.quantity-minus').addEventListener('click', () => {
-        const input = document.getElementById('quantity');
-        let value = parseInt(input.value);
-        if (value > 1) input.value = value - 1;
-    });
-
-    document.getElementById('add-to-cart-form').addEventListener('submit', function(e) {
+// Добавление в корзину
+const form = document.getElementById('add-to-cart-form');
+if (form) {
+    form.addEventListener('submit', function(e) {
         e.preventDefault();
         const formData = new FormData(this);
+
         fetch(this.action, {
             method: 'POST',
             body: formData,
@@ -150,11 +146,15 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(data => showToast(data.message || 'Товар добавлен в корзину'))
         .catch(() => showToast('Произошла ошибка', 'error'));
     });
-});
+}
 
+// Переключение избранного
 function toggleWishlist(slug) {
     const btn = document.getElementById(`wishlist-btn-${slug}`);
-    const url = btn.classList.contains('active') ? `/wishlist/remove/${slug}/` : `/wishlist/add/${slug}/`;
+    const url = btn.classList.contains('active')
+        ? `/wishlist/remove/${slug}/`
+        : `/wishlist/add/${slug}/`;
+
     fetch(url, {
         method: 'POST',
         headers: {
@@ -172,30 +172,18 @@ function toggleWishlist(slug) {
     });
 }
 
+// Поделиться товаром
 function shareProduct() {
     const title = "{{ product.name|escapejs }}";
     const text = "Посмотрите: {{ product.description|striptags|truncatechars:100|escapejs }}";
     const url = window.location.href;
+
     if (navigator.share) {
         navigator.share({ title, text, url });
     } else {
-        const tg = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title + '\n' + text)}`;
-        window.open(tg, '_blank', 'width=600,height=400');
+        const tgUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title + '\n' + text)}`;
+        window.open(tgUrl, '_blank', 'width=600,height=400');
     }
-}
-
-function showToast(message, type = 'success') {
-    const toastEl = document.createElement('div');
-    toastEl.className = `toast align-items-center text-white bg-${type === 'error' ? 'danger' : 'success'} border-0 position-fixed bottom-0 end-0 m-4`;
-    toastEl.innerHTML = `
-        <div class="d-flex">
-            <div class="toast-body">${message}</div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-        </div>
-    `;
-    document.body.appendChild(toastEl);
-    new bootstrap.Toast(toastEl).show();
-    setTimeout(() => toastEl.remove(), 5000);
 }
 </script>
 
@@ -206,5 +194,10 @@ function showToast(message, type = 'success') {
 .product-description ul, .product-description ol {
     padding-left: 20px;
 }
+.btn-outline-danger.active {
+    background-color: #dc3545;
+    color: white;
+}
 </style>
+
 {% endblock %}

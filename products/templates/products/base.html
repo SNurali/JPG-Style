@@ -44,7 +44,7 @@
         <link rel="alternate" hreflang="ru" href="https://smartwash.uz/" />
         <link rel="alternate" hreflang="uz" href="https://smartwash.uz/uz/" />
     {% elif '/uz/' in request.path %}
-        <link rel="alternate" hreflang="ru" href="https://smartwash.uz{{ request.path|slice:'3:' }}" />
+        <link rel="alternate" hreflang="ru" href="https://smartwash.uz{{ request.path|slice:'3:'}}" />
         <link rel="alternate" hreflang="uz" href="https://smartwash.uz{{ request.path }}" />
     {% else %}
         <link rel="alternate" hreflang="ru" href="https://smartwash.uz{{ request.path }}" />
@@ -100,28 +100,34 @@
     f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-T5P2DN9');
     </script>
+
+    <!-- Новый Yandex.Metrika -->
+    <script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+       m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+       m[i].l=1*new Date();
+       for (var j = 0; j < document.scripts.length; j++) {
+           if (document.scripts[j].src === r) { return; }
+       }
+       k=e.createElement(t),a=e.getElementsByTagName(t)[0],
+       k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+    ym(103323516, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        ecommerce:"dataLayer"
+    });
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/103323516" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+
 </head>
 <body>
 
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T5P2DN9"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-
-<!-- Yandex.Metrika -->
-<script type="text/javascript">
-(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0];
-k.async=1;k.src=r;a.parentNode.insertBefore(k,a)})
-(window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-
-ym(103175232, "init", {
-    clickmap:true,
-    trackLinks:true,
-    accurateTrackBounce:true,
-    webvisor:true
-});
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/103175232" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 fixed-top">
@@ -174,11 +180,10 @@ ym(103175232, "init", {
     </div>
 </a>
 
-
-
 <!-- Скрипты -->
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 <script>
+    // Общие функции для всех страниц
     window.addEventListener('scroll', function() {
         const navbar = document.querySelector('.navbar');
         navbar.classList.toggle('scrolled', window.scrollY > 50);
@@ -187,6 +192,44 @@ ym(103175232, "init", {
     document.querySelectorAll('.btn, .nav-link, .floating-cart').forEach(button => {
         button.classList.add('wave-effect');
     });
+
+    // Управление количеством товара
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.quantity-plus').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const input = this.closest('.input-group').querySelector('input');
+                let val = parseInt(input.value);
+                if (val < 10) input.value = val + 1;
+            });
+        });
+
+        document.querySelectorAll('.quantity-minus').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const input = this.closest('.input-group').querySelector('input');
+                let val = parseInt(input.value);
+                if (val > 1) input.value = val - 1;
+            });
+        });
+    });
+
+    // Всплывающие уведомления
+    function showToast(message, type = 'success') {
+        const toastEl = document.createElement('div');
+        toastEl.className = `toast align-items-center text-white bg-${type === 'error' ? 'danger' : 'success'} border-0 position-fixed bottom-0 end-0 m-3`;
+        toastEl.setAttribute('role', 'alert');
+        toastEl.setAttribute('aria-live', 'assertive');
+        toastEl.setAttribute('aria-atomic', 'true');
+        toastEl.innerHTML = `
+            <div class="d-flex">
+                <div class="toast-body">${message}</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        `;
+        document.body.appendChild(toastEl);
+        const toast = new bootstrap.Toast(toastEl);
+        toast.show();
+        setTimeout(() => toastEl.remove(), 5000);
+    }
 </script>
 
 <style>
@@ -240,11 +283,27 @@ ym(103175232, "init", {
     font-weight: bold;
     box-shadow: 0 0 0 2px white;
 }
+
+/* Общие стили для форм количества */
+.quantity-plus, .quantity-minus {
+    width: 40px;
+}
+#quantity {
+    -moz-appearance: textfield;
+    width: 40px;
+    padding: 0.375rem;
+    text-align: center;
+}
+#quantity::-webkit-outer-spin-button,
+#quantity::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.input-group {
+    width: auto;
+    flex-wrap: nowrap;
+}
 </style>
-
-
-
-
 
 </body>
 </html>
