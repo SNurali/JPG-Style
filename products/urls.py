@@ -1,8 +1,9 @@
 from django.urls import path
 from . import views
-
+from .views import yml_feed
 
 urlpatterns = [
+ 	path('yml.xml', yml_feed, name='yml_feed'),
     path('', views.home, name='home'),
     path('catalog/', views.catalog, name='catalog'),
     path('product/<slug:slug>/', views.product_detail, name='product_detail'),

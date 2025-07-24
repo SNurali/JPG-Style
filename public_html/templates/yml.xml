@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE yml_catalog SYSTEM "shops.dtd">
+<yml_catalog date="2025-07-23 12:00">
+  <shop>
+    <name>JPG-Style Smart Wash</name>
+    <company>JPG-Style Smart Wash</company>
+    <url>https://smartwash.uz</url>
+    <currencies>
+      <currency id="UZS" rate="1"/>
+    </currencies>
+    <categories>
+      <category id="1">Автохимия</category>
+    </categories>
+    <offers>
+      <offer id="1" available="true">
+        <url>https://smartwash.uz/product/1</url>
+        <price>45000</price>
+        <currencyId>UZS</currencyId>
+        <categoryId>1</categoryId>
+        <picture>https://smartwash.uz/media/products/shampoo.jpg</picture>
+        <name>Автошампунь бесконтактный</name>
+        <description>Мощное очищающее средство для всех типов автомобилей.</description>
+      </offer>
+    </offers>
+  </shop>
+</yml_catalog>

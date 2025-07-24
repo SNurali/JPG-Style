@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+     <link rel="icon" href="https://smartwash.uz/favicon.ico" type="image/x-icon">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="yandex-verification" content="04adbf52a5b45806" />
@@ -9,6 +10,7 @@
 
     <title>{% block title %}JPG-Style Smart Wash — автохимия и уход за авто{% endblock %}</title>
     <meta name="description" content="{% block description %}Интернет-магазин автохимии в Ташкенте. Чернители, шампуни, сухой туман. Доставка по Узбекистану.{% endblock %}">
+    <meta name="google-site-verification" content="CtD-glnfa6j3Qxar6OPVrBx3oqW-5KbUuXZ6eeJU9Ls" />
     <meta name="keywords" content="{% block keywords %}автохимия, шампунь для авто, чернитель резины, Ташкент, SmartWash, сухой туман{% endblock %}">
 
     <link rel="canonical" href="{{ request.build_absolute_uri }}">
@@ -40,16 +42,7 @@
     {% endblock %}
 
     <!-- Hreflang -->
-    {% if request.path == '/' %}
-        <link rel="alternate" hreflang="ru" href="https://smartwash.uz/" />
-        <link rel="alternate" hreflang="uz" href="https://smartwash.uz/uz/" />
-    {% elif '/uz/' in request.path %}
-        <link rel="alternate" hreflang="ru" href="https://smartwash.uz{{ request.path|slice:'3:'}}" />
-        <link rel="alternate" hreflang="uz" href="https://smartwash.uz{{ request.path }}" />
-    {% else %}
-        <link rel="alternate" hreflang="ru" href="https://smartwash.uz{{ request.path }}" />
-        <link rel="alternate" hreflang="uz" href="https://smartwash.uz/uz{{ request.path }}" />
-    {% endif %}
+    <link rel="alternate" hreflang="ru" href="{{ request.build_absolute_uri }}" />
     <link rel="alternate" hreflang="x-default" href="https://smartwash.uz/" />
 
     <!-- Favicon -->
@@ -101,7 +94,7 @@
     })(window,document,'script','dataLayer','GTM-T5P2DN9');
     </script>
 
-    <!-- Новый Yandex.Metrika -->
+    <!-- Yandex.Metrika -->
     <script type="text/javascript">
     (function(m,e,t,r,i,k,a){
        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
@@ -183,7 +176,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- Скрипты -->
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 <script>
-    // Общие функции для всех страниц
     window.addEventListener('scroll', function() {
         const navbar = document.querySelector('.navbar');
         navbar.classList.toggle('scrolled', window.scrollY > 50);
@@ -193,7 +185,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         button.classList.add('wave-effect');
     });
 
-    // Управление количеством товара
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.quantity-plus').forEach(btn => {
             btn.addEventListener('click', function() {
@@ -212,7 +203,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         });
     });
 
-    // Всплывающие уведомления
     function showToast(message, type = 'success') {
         const toastEl = document.createElement('div');
         toastEl.className = `toast align-items-center text-white bg-${type === 'error' ? 'danger' : 'success'} border-0 position-fixed bottom-0 end-0 m-3`;
@@ -284,7 +274,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     box-shadow: 0 0 0 2px white;
 }
 
-/* Общие стили для форм количества */
 .quantity-plus, .quantity-minus {
     width: 40px;
 }

@@ -57,24 +57,37 @@
                     <h5 class="mb-0">Форма обратной связи</h5>
                 </div>
                 <div class="card-body">
-                    <form id="contactForm" class="needs-validation" novalidate>
+                     <!-- Отображение сообщений Django -->
+                     {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <!-- Форма теперь отправляет POST-запрос -->
+                    <form method="post" action="{% url 'contacts' %}" class="needs-validation" novalidate>
+                        {% csrf_token %} <!-- Обязательно! -->
+
                         <div class="mb-3">
                             <label for="contactName" class="form-label">Ваше имя *</label>
-                            <input type="text" class="form-control" id="contactName" required>
+                            <input type="text" class="form-control" id="contactName" name="name" required>
                             <div class="invalid-feedback">Пожалуйста, укажите ваше имя</div>
                         </div>
                         <div class="mb-3">
-                            <label for="contactEmail" class="form-label">Email *</label>
-                            <input type="email" class="form-control" id="contactEmail" required>
+                            <label for="contactEmail" class="form-label">Email</label> <!-- Сделал необязательным, как в JS -->
+                            <input type="email" class="form-control" id="contactEmail" name="email"> <!-- Убрал required -->
                             <div class="invalid-feedback">Пожалуйста, укажите корректный email</div>
                         </div>
-                        <div class="mb-3">
+                         <div class="mb-3">
                             <label for="contactPhone" class="form-label">Телефон</label>
-                            <input type="tel" class="form-control" id="contactPhone">
+                            <input type="tel" class="form-control" id="contactPhone" name="phone">
                         </div>
                         <div class="mb-3">
                             <label for="contactMessage" class="form-label">Сообщение *</label>
-                            <textarea class="form-control" id="contactMessage" rows="4" required></textarea>
+                            <textarea class="form-control" id="contactMessage" name="message" rows="4" required></textarea>
                             <div class="invalid-feedback">Пожалуйста, напишите ваше сообщение</div>
                         </div>
                         <button type="submit" class="btn btn-primary w-100 hover-grow">
@@ -98,46 +111,23 @@
     </div>
 </div>
 
+<!-- Убираем старый JavaScript, который мешал отправке -->
+<!-- Оставляем только валидацию HTML5 -->
 <script>
-// Валидация формы обратной связи
 (function() {
     'use strict';
-    const form = document.getElementById('contactForm');
-    form.addEventListener('submit', function(event) {
-        if (!form.checkValidity()) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
-        form.classList.add('was-validated');
+    window.addEventListener('load', function() {
+        var forms = document.querySelectorAll('.needs-validation');
+        var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
     }, false);
 })();
-
-// Анимация при отправке формы
-document.getElementById('contactForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const btn = this.querySelector('button[type="submit"]');
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Отправка...';
-    btn.disabled = true;
-
-    // Имитация отправки
-    setTimeout(() => {
-        btn.innerHTML = '<i class="fas fa-check me-2"></i>Отправлено!';
-        setTimeout(() => {
-            btn.innerHTML = 'Отправить сообщение';
-            btn.disabled = false;
-            this.reset();
-            this.classList.remove('was-validated');
-
-            // Показываем уведомление
-            const alert = document.createElement('div');
-            alert.className = 'alert alert-success alert-dismissible fade show mt-3 animate__animated animate__fadeInUp';
-            alert.innerHTML = `
-                <strong>Спасибо!</strong> Ваше сообщение успешно отправлено. Мы свяжемся с вами в ближайшее время.
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            `;
-            this.parentNode.insertBefore(alert, this.nextSibling);
-        }, 2000);
-    }, 1500);
-});
 </script>
 {% endblock %}

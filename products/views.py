@@ -10,7 +10,15 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from .models import Product, Category, Order, OrderItem, Wishlist, AutoChemistryPost
 from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
+from django.http import HttpResponse
+from django.utils import timezone
+from xml.etree.ElementTree import Element, SubElement, tostring
+from django.utils.encoding import smart_str
+from django.http import HttpResponse
+from .utils import get_usd_to_uzs_rate
+from xml.etree.ElementTree import Element, SubElement, tostring
+import xml.etree.ElementTree as ET
+from decimal import Decimal
 
 # Настройка логгера
 logger = logging.getLogger(__name__)
@@ -42,6 +50,38 @@ def send_order_to_telegram(order):
         response.raise_for_status()
     except Exception as e:
         logger.error(f"Ошибка отправки в Telegram: {str(e)}")
+
+
+def yml_feed(request):
+    rate = Decimal(str(get_usd_to_uzs_rate()))  # Конвертируем float в Decimal
+
+    yml_catalog = Element('yml_catalog', date=timezone.now().strftime("%Y-%m-%d %H:%M"))
+    shop = SubElement(yml_catalog, 'shop')
+    SubElement(shop, 'name').text = 'SmartWash'
+
+    currencies = SubElement(shop, 'currencies')
+    SubElement(currencies, 'currency', id='USD', rate='1')
+
+    offers = SubElement(shop, 'offers')
+
+    for product in Product.objects.all():
+        try:
+            price_usd = (product.price / rate).quantize(Decimal('0.00'))  # Деление Decimal на Decimal
+        except (TypeError, ZeroDivisionError) as e:
+            print(f"Ошибка расчета цены для товара {product.id}: {e}")
+            continue  # Пропускаем товар с ошибкой
+
+        offer = SubElement(offers, 'offer', id=str(product.id), available='true')
+        SubElement(offer, 'name').text = product.name
+        SubElement(offer, 'price').text = str(price_usd)
+        SubElement(offer, 'currencyId').text = 'USD'
+        SubElement(offer, 'categoryId').text = str(product.category.id if product.category else 1)
+        SubElement(offer, 'url').text = f'https://smartwash.uz/product/{product.slug}'
+        SubElement(offer, 'picture').text = request.build_absolute_uri(product.image.url) if product.image else ''
+
+    xml_string = tostring(yml_catalog, encoding='utf-8')
+    return HttpResponse(xml_string, content_type='application/xml')
+
 
 
 # Главная страница с пагинацией и слайдером
@@ -353,8 +393,61 @@ def wishlist_view(request):
     wishlist_items = Wishlist.objects.filter(user=request.user).select_related('product')
     return render(request, 'products/wishlist.html', {'wishlist_items': wishlist_items})
 
+def send_message_to_telegram(text):
+    """Отправляет текстовое сообщение в Telegram."""
+    try:
+        url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+        params = {
+            'chat_id': TELEGRAM_CHAT_ID,
+            'text': text,
+            'parse_mode': 'HTML' # Используем HTML для форматирования
+        }
+        # Добавим таймаут для лучшей устойчивости
+        response = requests.post(url, params=params, timeout=10)
+        response.raise_for_status() # Проверка на ошибки HTTP
+        logger.info(f"Сообщение успешно отправлено в Telegram: {text[:50]}...")
+        return True
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Ошибка сети при отправке в Telegram: {e}")
+    except Exception as e:
+        logger.error(f"Ошибка отправки сообщения в Telegram: {e}")
+    return False
+
 # Страница контактов
 def contacts(request):
+    if request.method == 'POST':
+        # Получаем данные из формы
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        message_text = request.POST.get('message', '').strip()
+
+        # Простая валидация (имя и сообщение обязательны)
+        if not name or not message_text:
+             messages.error(request, "Пожалуйста, заполните обязательные поля (Имя, Сообщение).")
+             return render(request, 'products/contacts.html')
+
+        # Формируем сообщение для Telegram
+        telegram_message = (
+            f"📬 <b>Новое сообщение из формы контактов</b>\n\n"
+            f"<b>Имя:</b> {name}\n"
+        )
+        if phone:
+            telegram_message += f"<b>Телефон:</b> {phone}\n"
+        if email:
+            telegram_message += f"<b>Email:</b> {email}\n"
+        telegram_message += f"<b>Сообщение:</b>\n{message_text}"
+
+        # Отправляем сообщение
+        if send_message_to_telegram(telegram_message):
+            messages.success(request, "Спасибо за ваше сообщение! Мы свяжемся с вами в ближайшее время.")
+        else:
+             messages.error(request, "К сожалению, произошла ошибка при отправке сообщения. Пожалуйста, попробуйте позже или свяжитесь с нами другим способом.")
+
+        # Перенаправляем, чтобы избежать повторной отправки при обновлении страницы
+        return redirect('contacts')
+
+    # Если GET-запрос, просто отображаем страницу
     return render(request, 'products/contacts.html')
 
 
